@@ -1,0 +1,6 @@
+['remote "origin"']
+url = https://mir.fi.muni.cz/dvc/ARQMath-data-preprocessing
+['remote "localhost"']
+url = /mnt/storage/www/dvc/ARQMath-data-preprocessing
+[core]
+remote = origin

@@ -1,0 +1,13 @@
+outs:
+- path: output_data/ARQMath_CLEF2020/Formulas/formula_opt.V0.2.tsv
+  cache: true
+  md5: e625759fbd706323f0a1a1541f279c9e
+  metric: false
+  persist: false
+- path: output_data/ARQMath_CLEF2020/Formulas/formula_opt.V0.2.failures
+  cache: true
+  md5: 6162cc731d7088dd83fe654bdae27507
+  metric: false
+  persist: false
+md5: b1c678b0208c33b36d1eeebe1c5da2b5
+cmd: python3 -m cmml_tsv_to_opt_tsv
