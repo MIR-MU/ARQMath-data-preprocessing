@@ -10,17 +10,17 @@ from bs4 import BeautifulSoup
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from configuration import CSV_PARAMETERS, TSV_PMML_NUM_ROWS, POOL_CHUNKSIZE, TSV_PMML_ZIP_FILENAME, TSV_PMML_FILENAME, TSV_SLT_FILENAME, TSV_SLT_FAILURES_FILENAME
+from configuration import CSV_PARAMETERS, TSV_PMML_NUM_ROWS, POOL_CHUNKSIZE, TSV_PMML_ZIP_INPUT_FILENAME, TSV_PMML_FILENAME, TSV_SLT_FILENAME, TSV_SLT_FAILURES_FILENAME, POOL_NUM_WORKERS
 
 
 def count_tsv():
-    with ZipFile(TSV_PMML_ZIP_FILENAME, 'r') as zipfile:
-        with zipfile.open(TSV_PMML_FILENAME, 'r') as f:
+    with ZipFile(TSV_PMML_ZIP_INPUT_FILENAME, 'r') as zipfile:
+        with zipfile.open(TSV_PMML_INPUT_FILENAME, 'r') as f:
             rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
             num_rows = sum(1 for _ in tqdm(rows, desc='Counting lines'))
     assert num_rows == TSV_PMML_NUM_ROWS, '{}/{} contains only {} formulae out of the expected {}'.format(
-        TSV_PMML_ZIP_FILENAME,
-        TSV_PMML_FILENAME,
+        TSV_PMML_ZIP_INPUT_FILENAME,
+        TSV_PMML_INPUT_FILENAME,
         num_rows,
         TSV_PMML_NUM_ROWS,
     )
@@ -28,8 +28,8 @@ def count_tsv():
 
 
 def read_tsv():
-    with ZipFile(TSV_PMML_ZIP_FILENAME, 'r') as zipfile:
-        with zipfile.open(TSV_PMML_FILENAME, 'r') as f:
+    with ZipFile(TSV_PMML_ZIP_INPUT_FILENAME, 'r') as zipfile:
+        with zipfile.open(TSV_PMML_INPUT_FILENAME, 'r') as f:
             pmml_rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
             yield next(pmml_rows)
             for pmml_row in pmml_rows:
@@ -52,7 +52,7 @@ def write_tsv():
         with open(TSV_SLT_FAILURES_FILENAME, 'wt') as slt_failures_f:
             slt_writer = csv.writer(slt_f,  **CSV_PARAMETERS)
             slt_writer.writerow(first_pmml_row)
-            with Pool(None) as pool:
+            with Pool(POOL_NUM_WORKERS) as pool:
                 num_successful, num_total = 0, 0
                 for failure, slt_row in pool.imap(write_tsv_worker, pmml_rows, POOL_CHUNKSIZE):
                     num_total += 1
