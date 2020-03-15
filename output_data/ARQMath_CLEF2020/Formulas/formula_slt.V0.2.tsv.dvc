@@ -1,13 +1,13 @@
 cmd: python3 -m pmml_tsv_to_slt_tsv
 outs:
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_slt.V0.2.tsv
+- path: formula_slt.V0.2.tsv
   persist: false
   md5: 631ad68130fd66199c67dcd89bd6cc51
   metric: false
   cache: true
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_slt.V0.2.failures
+- path: formula_slt.V0.2.failures
   persist: false
   md5: b986d463b425a53227068795bc622136
   metric: false
   cache: true
-md5: b7f0c8db9b84d214fe12040efcc70fdf
+md5: 428bce01cb2d6033499c44d8dffe720f

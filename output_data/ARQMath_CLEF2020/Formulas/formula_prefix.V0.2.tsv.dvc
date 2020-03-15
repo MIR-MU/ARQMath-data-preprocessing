@@ -1,13 +1,13 @@
-md5: a7a3c526a35d5d3e7892bb24b1c75406
+md5: c2b9b95cf5b237123bd39801927a7b83
 outs:
 - metric: false
   md5: 44d78e99697e138490c2a0fa5cd9e712
   cache: true
   persist: false
-  path: output_data/ARQMath_CLEF2020/Formulas/formula_prefix.V0.2.tsv
+  path: formula_prefix.V0.2.tsv
 - metric: false
   md5: d1e9721c4f37f0d7f53247072164dc9d
   cache: true
   persist: false
-  path: output_data/ARQMath_CLEF2020/Formulas/formula_prefix.V0.2.failures
+  path: formula_prefix.V0.2.failures
 cmd: python3 -m cmml_tsv_to_prefix_tsv

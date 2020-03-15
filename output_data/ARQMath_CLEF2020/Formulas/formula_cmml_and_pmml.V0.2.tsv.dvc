@@ -1,23 +1,23 @@
 cmd: python3 -m latex_tsv_to_cmml_and_pmml_tsv
 outs:
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_cmml.V0.2.failures
+- path: formula_cmml.V0.2.failures
   persist: false
   md5: 1659b05383f7be69651673b6d95fc675
   metric: false
   cache: true
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_cmml.V0.2.tsv
+- path: formula_cmml.V0.2.tsv
   persist: false
   md5: d30342f1fa64db69dc148f9a338e8f95
   metric: false
   cache: true
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_pmml.V0.2.failures
+- path: formula_pmml.V0.2.failures
   persist: false
   md5: 9f5de2d848d2274fa8040dfecbe87a71
   metric: false
   cache: true
-- path: output_data/ARQMath_CLEF2020/Formulas/formula_pmml.V0.2.tsv
+- path: formula_pmml.V0.2.tsv
   persist: false
   md5: 38ddfa8e934e93cd49ce37f3fa7a77b7
   metric: false
   cache: true
-md5: 80f0fe7f0b6f3107529325a30edbb98f
+md5: fe268e7691611e5974bd912dae8fc47e
