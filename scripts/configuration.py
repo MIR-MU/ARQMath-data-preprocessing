@@ -1,9 +1,12 @@
+# -*- coding:utf-8 -*-
+
 import csv
 import ctypes
 from os import cpu_count
 from os.path import dirname, join
 
 from tangentcft.TangentS.math_tan import latex_mml
+from tangentcft.TangentS.math_tan.mathml import MathML
 
 
 CSV_PARAMETERS = {
@@ -31,17 +34,55 @@ TSV_SLT_FILENAME = '{}/formula_slt.V0.2.tsv'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
 TSV_SLT_FAILURES_FILENAME = '{}/formula_slt.V0.2.failures'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
 TSV_PREFIX_FILENAME = '{}/formula_prefix.V0.2.tsv'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
 TSV_PREFIX_FAILURES_FILENAME = '{}/formula_prefix.V0.2.failures'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
-HTML_CMML_FILENAME = '{}/formula_latex.V0.2.cmml.html'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
-HTML_PMML_FILENAME = '{}/formula_latex.V0.2.pmml.html'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
+TSV_INFIX_FILENAME = '{}/formula_infix.V0.2.tsv'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
+TSV_INFIX_FAILURES_FILENAME = '{}/formula_infix.V0.2.failures'.format(ARQMATH_OUTPUT_DATA_DIRNAME)
 
 TSV_LATEX_NUM_ROWS = 25530085
 TSV_CMML_INPUT_NUM_ROWS = 22868569
 TSV_PMML_INPUT_NUM_ROWS = 23941414
 TSV_CMML_OUTPUT_NUM_ROWS = 24573083
 TSV_PMML_OUTPUT_NUM_ROWS = 24950196
-TSV_OPT_NUM_ROWS = 24276306
+TSV_OPT_NUM_ROWS = 24276231
 TSV_SLT_NUM_ROWS = 24950054
-TSV_PREFIX_NUM_ROWS = 24276306
+TSV_PREFIX_NUM_ROWS = 24276231
+TSV_INFIX_NUM_ROWS = 24276231
+
+TSV_OPT_INFIX_OPERATORS = set(
+    [
+        'U!{}'.format(element[len(MathML.namespace):])
+        for element in [
+            MathML.approx,
+            MathML.eq,
+            MathML.neq,
+            MathML.equivalent,
+            MathML.union,
+            MathML.intersect,
+            MathML.plus,
+            MathML.times,
+            MathML._and,
+            MathML._or,
+        ]
+    ] + [
+        'O!{}'.format(element[len(MathML.namespace):])
+        for element in [
+            MathML.lt,
+            MathML.gt,
+            MathML.leq,
+            MathML.geq,
+            MathML.minus,
+            MathML.divide,
+            MathML.subset,
+            MathML.prsubset,
+            MathML.notsubset,
+            MathML.notprsubset,
+            MathML._in,
+            MathML.notin,
+            MathML.setdiff,
+            MathML.implies,
+            MathML.compose,
+        ]
+    ]
+)
 
 XML_NAMESPACES = {
     'xhtml': 'http://www.w3.org/1999/xhtml',

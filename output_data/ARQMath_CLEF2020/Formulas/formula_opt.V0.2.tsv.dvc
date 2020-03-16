@@ -1,16 +1,16 @@
 outs:
 - path: formula_opt.V0.2.tsv
   cache: true
-  md5: 415e41eb610ef86dd7187b47f4c2ab7f
+  md5: fe073b3353dd69eca371838c9cb4a0d9
   metric: false
   persist: false
 - path: formula_opt.V0.2.failures
   cache: true
-  md5: a3f70f966183c791f557c885c0c90bbe
+  md5: 6e6d237954bf8215090bbd159c77a667
   metric: false
   persist: false
 deps:
 - md5: d30342f1fa64db69dc148f9a338e8f95
   path: formula_cmml.V0.2.tsv
-md5: 1e3cfd31f93f6cbc241c311ffd1992ce
-cmd: cd ../../.. && python3 -m cmml_tsv_to_opt_tsv
+md5: 8aa4b220eee4586b3902dcd9ae2e8a87
+cmd: make formula_opt.V0.2.failures formula_opt.V0.2.tsv
