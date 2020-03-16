@@ -1,13 +1,16 @@
-md5: c2b9b95cf5b237123bd39801927a7b83
+md5: 63e99fda527257ad2435efa33bf3723e
 outs:
 - metric: false
-  md5: 44d78e99697e138490c2a0fa5cd9e712
+  md5: fb6e4723efc01bbae6f2391fc6812133
   cache: true
   persist: false
   path: formula_prefix.V0.2.tsv
 - metric: false
-  md5: d1e9721c4f37f0d7f53247072164dc9d
+  md5: a3f70f966183c791f557c885c0c90bbe
   cache: true
   persist: false
   path: formula_prefix.V0.2.failures
-cmd: python3 -m cmml_tsv_to_prefix_tsv
+deps:
+- md5: d30342f1fa64db69dc148f9a338e8f95
+  path: formula_cmml.V0.2.tsv
+cmd: cd ../../.. && python3 -m cmml_tsv_to_prefix_tsv

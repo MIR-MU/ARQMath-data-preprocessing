@@ -1,4 +1,4 @@
-cmd: python3 -m latex_tsv_to_cmml_and_pmml_tsv
+cmd: cd ../../.. && python3 -m latex_tsv_to_cmml_and_pmml_tsv
 outs:
 - path: formula_cmml.V0.2.failures
   persist: false
@@ -20,4 +20,4 @@ outs:
   md5: 38ddfa8e934e93cd49ce37f3fa7a77b7
   metric: false
   cache: true
-md5: fe268e7691611e5974bd912dae8fc47e
+md5: 252ab857c18a82559cb221591950b771

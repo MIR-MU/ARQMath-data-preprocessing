@@ -2,47 +2,42 @@
 # -*- coding:utf-8 -*-
 
 import csv
-from io import TextIOWrapper
 from multiprocessing import Pool
-from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from configuration import CSV_PARAMETERS, TSV_PMML_NUM_ROWS, POOL_CHUNKSIZE, TSV_PMML_ZIP_INPUT_FILENAME, TSV_PMML_FILENAME, TSV_SLT_FILENAME, TSV_SLT_FAILURES_FILENAME, POOL_NUM_WORKERS
+from configuration import CSV_PARAMETERS, TSV_PMML_OUTPUT_NUM_ROWS, POOL_CHUNKSIZE, TSV_PMML_OUTPUT_FILENAME, TSV_SLT_FILENAME, TSV_SLT_FAILURES_FILENAME, POOL_NUM_WORKERS
 
 
 def count_tsv():
-    with ZipFile(TSV_PMML_ZIP_INPUT_FILENAME, 'r') as zipfile:
-        with zipfile.open(TSV_PMML_INPUT_FILENAME, 'r') as f:
-            rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
-            num_rows = sum(1 for _ in tqdm(rows, desc='Counting lines'))
-    assert num_rows == TSV_PMML_NUM_ROWS, '{}/{} contains only {} formulae out of the expected {}'.format(
-        TSV_PMML_ZIP_INPUT_FILENAME,
-        TSV_PMML_INPUT_FILENAME,
+    with open(TSV_PMML_OUTPUT_FILENAME, 'rt') as f:
+        rows = csv.reader(f, **CSV_PARAMETERS)
+        num_rows = sum(1 for _ in tqdm(rows, desc='Counting lines'))
+    assert num_rows == TSV_PMML_OUTPUT_NUM_ROWS, '{} contains only {} formulae out of the expected {}'.format(
+        TSV_PMML_OUTPUT_FILENAME,
         num_rows,
-        TSV_PMML_NUM_ROWS,
+        TSV_PMML_OUTPUT_NUM_ROWS,
     )
     return num_rows
 
 
 def read_tsv():
-    with ZipFile(TSV_PMML_ZIP_INPUT_FILENAME, 'r') as zipfile:
-        with zipfile.open(TSV_PMML_INPUT_FILENAME, 'r') as f:
-            pmml_rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
-            yield next(pmml_rows)
-            for pmml_row in pmml_rows:
-                document = BeautifulSoup(pmml_row[-1], 'lxml')
-                math_elements = document.find_all('math')
-                if len(math_elements) >= 1:
-                    math_element = math_elements[0]
-                    for share_element in math_element.find_all('share'):
-                        share_element.decompose()
-                    math_tokens = str(math_element)
-                else:
-                    math_tokens = ''
-                yield pmml_row[:-1] + [math_tokens]
+    with open(TSV_PMML_OUTPUT_FILENAME, 'rt') as f:
+        pmml_rows = csv.reader(f, **CSV_PARAMETERS)
+        yield next(pmml_rows)
+        for pmml_row in pmml_rows:
+            document = BeautifulSoup(pmml_row[-1], 'lxml')
+            math_elements = document.find_all('math')
+            if len(math_elements) >= 1:
+                math_element = math_elements[0]
+                for share_element in math_element.find_all('share'):
+                    share_element.decompose()
+                math_tokens = str(math_element)
+            else:
+                math_tokens = ''
+            yield pmml_row[:-1] + [math_tokens]
 
 
 def write_tsv():
