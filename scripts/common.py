@@ -2,49 +2,72 @@
 
 import csv
 from copy import copy
+import subprocess
 
 from bs4 import BeautifulSoup
+from lxml import etree
 from multiprocessing import Pool
 from tqdm import tqdm
 
-from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS
+from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS, ETREE_TOSTRING_PARAMETERS, LATEXMLC, MATHMLCAN
 
 
-def cmml_read_tsv_worker(cmml_row):
-    document = BeautifulSoup(cmml_row[-1], 'lxml')
+def unicode_to_tree(text):
+    return etree.XML(text.encode(ETREE_TOSTRING_PARAMETERS['encoding']))
+
+
+def tree_to_unicode(tree):
+    return etree.tostring(tree, **ETREE_TOSTRING_PARAMETERS).decode(ETREE_TOSTRING_PARAMETERS['encoding'])
+
+
+def latexml(latex_input):
+    latex_input = latex_input.encode('utf-8')
+    xml_output = subprocess.Popen(
+        LATEXMLC,
+        shell=False,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).communicate(latex_input)[0]
+    xml_output = xml_output.decode('utf-8')
+    return xml_output
+
+
+def mathmlcan(xml_input):
+    xml_input = resolve_share_elements(xml_input)
+    xml_input = xml_input.encode('utf-8')
+    xml_output = subprocess.Popen(
+        MATHMLCAN,
+        shell=False,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).communicate(xml_input)[0]
+    xml_output = xml_output.decode('utf-8')
+    return xml_output
+
+
+def resolve_share_elements(math_tokens):
+    math_element = BeautifulSoup(math_tokens, 'lxml')
+    for share_element in math_element.find_all('share'):
+        assert share_element['href'].startswith('#')
+        shared_element = math_element.find(id=share_element['href'][1:])
+        if shared_element:
+            share_element.replace_with(copy(shared_element))
+        else:
+            share_element.decompose()
+    return str(math_element)
+
+
+def cmml_and_pmml_read_tsv_worker(row):
+    document = BeautifulSoup(row[-1], 'lxml')
     math_elements = document.find_all('math')
     if len(math_elements) >= 1:
         math_element = math_elements[0]
-        math_element.semantics.unwrap()  # remove <semantics> element
-        for share_element in math_element.find_all('share'):  # resolve <share> elements
-            assert share_element['href'].startswith('#')
-            shared_element = math_element.find(id=share_element['href'][1:])
-            if shared_element:
-                share_element.replace_with(copy(shared_element))
-            else:
-                share_element.decompose()
         math_tokens = str(math_element)
     else:
         math_tokens = ''
-    return cmml_row[:-1] + [math_tokens]
-
-
-def pmml_read_tsv_worker(pmml_row):
-    document = BeautifulSoup(pmml_row[-1], 'lxml')
-    math_elements = document.find_all('math')
-    if len(math_elements) >= 1:
-        math_element = math_elements[0]
-        for share_element in math_element.find_all('share'):  # resolve <share> elements
-            assert share_element['href'].startswith('#')
-            shared_element = math_element.find(id=share_element['href'][1:])
-            if shared_element:
-                share_element.replace_with(copy(shared_element))
-            else:
-                share_element.decompose()
-        math_tokens = str(math_element)
-    else:
-        math_tokens = ''
-    return pmml_row[:-1] + [math_tokens]
+    return row[:-1] + [math_tokens]
 
 
 def write_single_tsv(count_tsv, read_tsv, write_tsv_worker, output_tsv_filename, output_failures_filename):

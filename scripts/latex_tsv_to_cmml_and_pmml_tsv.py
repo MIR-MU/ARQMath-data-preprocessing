@@ -5,19 +5,20 @@ import csv
 from itertools import islice
 from os.path import join
 from multiprocessing import Pool
-import platform
 import re
 import subprocess
 import sys
 
+from bs4 import BeautifulSoup
 from lxml import etree
 from tqdm import tqdm
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 
-from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, TSV_LATEX_FILENAME, POOL_CHUNKSIZE, TSV_CMML_OUTPUT_FILENAME, TSV_PMML_OUTPUT_FILENAME, TSV_LATEX_NUM_ROWS, TSV_CMML_OUTPUT_FAILURES_FILENAME, TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS
+from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, TSV_LATEX_FILENAME, POOL_CHUNKSIZE, TSV_CMML_OUTPUT_FILENAME, TSV_PMML_OUTPUT_FILENAME, TSV_LATEX_NUM_ROWS, TSV_CMML_OUTPUT_FAILURES_FILENAME, TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS, MATHMLCAN, ETREE_TOSTRING_PARAMETERS
+from .common import tree_to_unicode, unicode_to_tree, latexml, mathmlcan
 
 
-USE_SHELL = 'Windows' in platform.system()
+USE_SHELL = False
 
 
 def get_batches(iterable, batch_size=LATEXMLC_BATCH_SIZE):
@@ -94,40 +95,36 @@ def write_tsv_worker(latex_rows):
     latex_input = '\n\n'.join(
         'Formula #{}:\n\[{}\]'.format(latex_row[0], latex_row[-1])
         for latex_row in latex_rows
-    ).encode('utf8')
-    xml_output = subprocess.Popen(
-        LATEXMLC,
-        shell=USE_SHELL,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-    ).communicate(latex_input)[0]
+    )
+    xml_output = mathmlcan(latexml(latex_input))
 
     cmml_rows = []
     pmml_rows = []
     try:
-        xml_document = etree.XML(xml_output)
+        xml_document = unicode_to_tree(xml_output)
         for latex_row in latex_rows:
             math_elements = xml_document.xpath(
                 '//xhtml:div[@class = "ltx_para" and xhtml:p[@class = "ltx_p" and normalize-space(text()) = "Formula #{}:"]]//mathml:math'.format(latex_row[0]),
                 namespaces=XML_NAMESPACES
             )
             if len(math_elements) >= 1:
-                math_tokens = etree.tostring(math_elements[0])
+                math_element = math_elements[0]
+                math_tokens = tree_to_unicode(math_element)
                 try:
-                    cmml_math_element = etree.XML(MathExtractor.isolate_cmml(math_tokens).encode('utf8'))
-                    pmml_math_element = etree.XML(MathExtractor.isolate_pmml(math_tokens).encode('utf8'))
+                    cmml_math_element = unicode_to_tree(MathExtractor.isolate_cmml(math_tokens))
+                    pmml_math_element = unicode_to_tree(MathExtractor.isolate_pmml(math_tokens))
                     if cmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
                         cmml_math_tokens = ''
                         cmml_failure = ValueError('LaTeXML output contains <cerror> elements')
                     else:
-                        cmml_math_tokens = etree.tostring(cmml_math_element).decode('utf8')
+                        etree.strip_tags(cmml_math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
+                        cmml_math_tokens = tree_to_unicode(cmml_math_element)
                         cmml_failure = None
                     if pmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
                         pmml_math_tokens = ''
                         pmml_failure = ValueError('LaTeXML output contains <cerror> elements')
                     else:
-                        pmml_math_tokens = etree.tostring(pmml_math_element).decode('utf8')
+                        pmml_math_tokens = tree_to_unicode(pmml_math_element)
                         pmml_failure = None
                 except Exception as e:
                     cmml_math_tokens = ''

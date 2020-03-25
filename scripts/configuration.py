@@ -40,12 +40,12 @@ TSV_INFIX_FAILURES_FILENAME = '{}/formula_infix.V0.2.failures'.format(ARQMATH_OU
 TSV_LATEX_NUM_ROWS = 25530085
 TSV_CMML_INPUT_NUM_ROWS = 22868569
 TSV_PMML_INPUT_NUM_ROWS = 23941414
-TSV_CMML_OUTPUT_NUM_ROWS = 24573083
-TSV_PMML_OUTPUT_NUM_ROWS = 24950196
-TSV_OPT_NUM_ROWS = 24276231
+TSV_CMML_OUTPUT_NUM_ROWS = 24572932
+TSV_PMML_OUTPUT_NUM_ROWS = 24950034
+TSV_OPT_NUM_ROWS = 24555182
 TSV_SLT_NUM_ROWS = 24950054
-TSV_PREFIX_NUM_ROWS = 24276231
-TSV_INFIX_NUM_ROWS = 24276231
+TSV_PREFIX_NUM_ROWS = 24555182
+TSV_INFIX_NUM_ROWS = 24555182
 
 TSV_OPT_INFIX_OPERATORS = set(
     [
@@ -84,6 +84,10 @@ TSV_OPT_INFIX_OPERATORS = set(
     ]
 )
 
+ETREE_TOSTRING_PARAMETERS = {
+    'xml_declaration': True,
+    'encoding': 'UTF-8',
+}
 XML_NAMESPACES = {
     'xhtml': 'http://www.w3.org/1999/xhtml',
     'mathml': 'http://www.w3.org/1998/Math/MathML',
@@ -103,3 +107,10 @@ LATEXMLC = [
     '-',
 ]
 LATEXMLC_BATCH_SIZE = 1000
+
+MATHMLCAN = [
+    'java',
+    '-jar',
+    '/home/novotny/.m2/repository/cz/muni/fi/mir/mathml-canonicalizer/1.4.0/mathml-canonicalizer-1.4.0-jar-with-dependencies.jar',
+    '/dev/stdin',
+]

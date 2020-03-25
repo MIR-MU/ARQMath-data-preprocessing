@@ -23,5 +23,5 @@ $(SLT): $(PMML)
 $(PREFIX): $(CMML)
 	$(RUN_SCRIPT) scripts.cmml_tsv_to_prefix_tsv
 
-$(PREFIX): $(CMML)
+$(INFIX): $(CMML)
 	$(RUN_SCRIPT) scripts.cmml_tsv_to_infix_tsv

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from .common import cmml_read_tsv_worker as read_tsv_worker, write_single_tsv as write_tsv
+from .common import cmml_and_pmml_read_tsv_worker as read_tsv_worker, write_single_tsv as write_tsv
 from .configuration import CSV_PARAMETERS, TSV_CMML_OUTPUT_NUM_ROWS, POOL_CHUNKSIZE, TSV_CMML_OUTPUT_FILENAME, TSV_PREFIX_FILENAME, TSV_PREFIX_FAILURES_FILENAME, POOL_NUM_WORKERS
 
 
