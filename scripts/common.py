@@ -156,10 +156,8 @@ def write_single_tsv(count_tsv, read_tsv, write_tsv_worker, output_tsv_filename,
 def opt_tokenize(mathml_tokens):
     math_tree = MathExtractor.convert_to_semanticsymbol(mathml_tokens)
     math_tokens = [
-        (
-            '\t'.join(edge)
-            for edge in math_tree.get_pairs('', window=2, eob=True)
-        )
+        '\t'.join(edge)
+        for edge in math_tree.get_pairs('', window=2, eob=True)
     ]
     return math_tokens
 
@@ -167,10 +165,8 @@ def opt_tokenize(mathml_tokens):
 def slt_tokenize(mathml_tokens):
     math_tree = MathExtractor.convert_to_layoutsymbol(mathml_tokens)
     math_tokens = [
-        (
-            '\t'.join(edge)
-            for edge in math_tree.get_pairs('', window=2, eob=True)
-        )
+        '\t'.join(edge)
+        for edge in math_tree.get_pairs('', window=2, eob=True)
     ]
     return math_tokens
 

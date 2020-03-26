@@ -14,8 +14,24 @@ from lxml import etree
 from tqdm import tqdm
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 
-from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, ARQMATH_TRAIN_TSV_LATEX_FILENAME, POOL_CHUNKSIZE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS
+from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, ARQMATH_TRAIN_TSV_LATEX_FILENAME, POOL_CHUNKSIZE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS, ARQMATH_TEST_TSV_LATEX_FILENAME, ARQMATH_TEST_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TEST_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TEST_TSV_LATEX_NUM_ROWS
 from .common import tree_to_unicode, unicode_to_tree, latexml, mathmlcan
+
+
+if sys.argv[1] == 'train':
+    ARQMATH_TSV_LATEX_FILENAME = ARQMATH_TRAIN_TSV_LATEX_FILENAME
+    ARQMATH_TSV_LATEX_NUM_ROWS = ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS
+    ARQMATH_TSV_CMML_OUTPUT_FILENAME = ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME
+    ARQMATH_TSV_CMML_OUTPUT_FAILURES_FILENAME = ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME
+    ARQMATH_TSV_PMML_OUTPUT_FILENAME = ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME
+    ARQMATH_TSV_PMML_OUTPUT_FAILURES_FILENAME = ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME
+else:
+    ARQMATH_TSV_LATEX_FILENAME = ARQMATH_TEST_TSV_LATEX_FILENAME
+    ARQMATH_TSV_LATEX_NUM_ROWS = ARQMATH_TEST_TSV_LATEX_NUM_ROWS
+    ARQMATH_TSV_CMML_OUTPUT_FILENAME = ARQMATH_TEST_TSV_CMML_OUTPUT_FILENAME
+    ARQMATH_TSV_CMML_OUTPUT_FAILURES_FILENAME = ARQMATH_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME
+    ARQMATH_TSV_PMML_OUTPUT_FILENAME = ARQMATH_TEST_TSV_PMML_OUTPUT_FILENAME
+    ARQMATH_TSV_PMML_OUTPUT_FAILURES_FILENAME = ARQMATH_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME
 
 
 def get_batches(iterable, batch_size=LATEXMLC_BATCH_SIZE):
@@ -24,19 +40,19 @@ def get_batches(iterable, batch_size=LATEXMLC_BATCH_SIZE):
 
 
 def count_tsv():
-    with open(ARQMATH_TRAIN_TSV_LATEX_FILENAME, 'rt') as f:
+    with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
         rows = csv.reader(f, **CSV_PARAMETERS)
         num_rows = sum(1 for _ in tqdm(rows, desc='Counting lines'))
-    assert num_rows == ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS, '{} contains {} formulae instead of the expected {}'.format(
-        ARQMATH_TRAIN_TSV_LATEX_FILENAME,
+    assert num_rows == ARQMATH_TSV_LATEX_NUM_ROWS, '{} contains {} formulae instead of the expected {}'.format(
+        ARQMATH_TSV_LATEX_FILENAME,
         num_rows,
-        ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS,
+        ARQMATH_TSV_LATEX_NUM_ROWS,
     )
     return num_rows
 
 
 def read_tsv():
-    with open(ARQMATH_TRAIN_TSV_LATEX_FILENAME, 'rt') as f:
+    with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
         latex_rows = csv.reader(f, **CSV_PARAMETERS)
         yield next(latex_rows)
         for latex_row in latex_rows:
@@ -47,11 +63,11 @@ def read_tsv():
 def write_tsv():
     latex_rows = iter(tqdm(read_tsv(), total=count_tsv(), desc='Converting'))
     first_latex_row = next(latex_rows)
-    with open(ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME, 'wt') as cmml_f, open(ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME, 'wt') as cmml_failures_f:
+    with open(ARQMATH_TSV_CMML_OUTPUT_FILENAME, 'wt') as cmml_f, open(ARQMATH_TSV_CMML_OUTPUT_FAILURES_FILENAME, 'wt') as cmml_failures_f:
         cmml_num_successful = 0
         cmml_writer = csv.writer(cmml_f,  **CSV_PARAMETERS)
         cmml_writer.writerow(first_latex_row)
-        with open(ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME, 'wt') as pmml_f, open(ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME, 'wt') as pmml_failures_f:
+        with open(ARQMATH_TSV_PMML_OUTPUT_FILENAME, 'wt') as pmml_f, open(ARQMATH_TSV_PMML_OUTPUT_FAILURES_FILENAME, 'wt') as pmml_failures_f:
             pmml_num_successful = 0
             pmml_writer = csv.writer(pmml_f,  **CSV_PARAMETERS)
             pmml_writer.writerow(first_latex_row)

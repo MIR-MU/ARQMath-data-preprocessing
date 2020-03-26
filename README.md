@@ -4,6 +4,7 @@ This repository contains scripts for producting preprocessed [ARQMath
 competition][ARQMath] datasets:
 
 - `output_data/ARQMath_CLEF2020/Formulas/formula_*.V0.2.{tsv,failures}` – The training set of formulae for the [ARQMath competition][ARQMath]
+- `output_data/ARQMath_CLEF2020/Task1/Formula_topics_*_V1.2.{tsv,failures}` – The test set of formulae for the [ARQMath competition][ARQMath]
 
 ## Downloading the preprocessed datasets
 

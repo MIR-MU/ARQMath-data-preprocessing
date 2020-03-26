@@ -1,0 +1,24 @@
+cmd: make Formula_topics_cmml.V1.2.failures Formula_topics_cmml.V1.2.tsv Formula_topics_pmml.V1.2.failures
+  Formula_topics_pmml.V1.2.tsv
+outs:
+- md5: 7aeac8511a8b6a9def1336ab53ffdd32
+  persist: false
+  path: Formula_topics_cmml_V1.2.failures
+  metric: false
+  cache: true
+- md5: 5c75a6991b0e785c7ad48245d5fb31ad
+  metric: false
+  persist: false
+  cache: true
+  path: Formula_topics_cmml_V1.2.tsv
+- md5: 6f670cec8dfe1e080efbb817e684a994
+  metric: false
+  persist: false
+  cache: true
+  path: Formula_topics_pmml_V1.2.failures
+- md5: 63074aba05f64d330d0fccf26d98be0c
+  metric: false
+  persist: false
+  cache: true
+  path: Formula_topics_pmml_V1.2.tsv
+md5: 3046f500000e27cc17d2c10fa4ffb138

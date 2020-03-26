@@ -12,16 +12,16 @@ INFIX=formula_infix.V0.2.failures formula_infix.V0.2.tsv
 all: $(CMML) $(PMML) $(OPT) $(SLT) $(PREFIX) $(INFIX)
 
 $(CMML) $(PMML):
-	$(RUN_SCRIPT) scripts.latex_tsv_to_cmml_and_pmml_tsv
+	$(RUN_SCRIPT) scripts.latex_tsv_to_cmml_and_pmml_tsv train
 
 $(OPT): $(CMML)
-	$(RUN_SCRIPT) scripts.cmml_tsv_to_opt_tsv
+	$(RUN_SCRIPT) scripts.cmml_tsv_to_opt_tsv train
 
 $(SLT): $(PMML)
-	$(RUN_SCRIPT) scripts.pmml_tsv_to_slt_tsv
+	$(RUN_SCRIPT) scripts.pmml_tsv_to_slt_tsv train
 
 $(PREFIX): $(CMML)
-	$(RUN_SCRIPT) scripts.cmml_tsv_to_prefix_tsv
+	$(RUN_SCRIPT) scripts.cmml_tsv_to_prefix_tsv train
 
 $(INFIX): $(CMML)
-	$(RUN_SCRIPT) scripts.cmml_tsv_to_infix_tsv
+	$(RUN_SCRIPT) scripts.cmml_tsv_to_infix_tsv train
