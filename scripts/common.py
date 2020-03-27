@@ -153,6 +153,16 @@ def write_single_tsv(count_tsv, read_tsv, write_tsv_worker, output_tsv_filename,
     )
 
 
+def latex_tokenize(mathml_tokens):
+    html5_parser = etree.HTMLParser()
+    math_tree = etree.XML(mathml_tokens.encode('utf-8'), html5_parser)
+    math_elements = math_tree.xpath('//math')
+    assert len(math_elements) > 0
+    math_element = math_elements[0]
+    math_tokens = [math_element.attrib['alttext']]
+    return math_tokens
+
+
 def opt_tokenize(mathml_tokens):
     math_tree = MathExtractor.convert_to_semanticsymbol(mathml_tokens)
     math_tokens = [

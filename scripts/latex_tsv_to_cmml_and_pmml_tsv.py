@@ -18,6 +18,7 @@ from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, ARQMAT
 from .common import tree_to_unicode, unicode_to_tree, latexml, mathmlcan
 
 
+assert sys.argv[1] in ('train', 'test')
 if sys.argv[1] == 'train':
     ARQMATH_TSV_LATEX_FILENAME = ARQMATH_TRAIN_TSV_LATEX_FILENAME
     ARQMATH_TSV_LATEX_NUM_ROWS = ARQMATH_TRAIN_TSV_LATEX_NUM_ROWS
