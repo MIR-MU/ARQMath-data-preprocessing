@@ -8,7 +8,7 @@ import subprocess
 from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
-from gensim.utils import simple_preprocess
+from gensim.utils import simple_preprocess as gensim_simple_preprocess
 from lxml import etree
 import n2w
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
@@ -39,7 +39,33 @@ class Math(object):
         return '{{Math: {} ...}}'.format(self.math[:10])
 
 
-def read_xhtml_worker(args):
+def simple_preprocess(text):
+    return gensim_simple_preprocess(text, max_len=float('inf'))
+
+
+def ntcir_topic_read_xhtml(filename):
+    xml_document = etree.parse(filename)
+    for topic_element in xml_document.xpath('//ntcir-math:topic', namespaces=XML_NAMESPACES):
+        topic_number_elements = topic_element.xpath('.//ntcir-math:num', namespaces=XML_NAMESPACES)
+        assert len(topic_number_elements) == 1
+        topic_number_element = topic_number_elements[0]
+        topic_number = topic_number_element.text
+
+        tokens = []
+        for math_element in topic_element.xpath('.//ntcir-math:formula/mathml:math', namespaces=XML_NAMESPACES):
+            math_token = Math(resolve_share_elements(tree_to_unicode(math_element)))
+            tokens.append(math_token)
+        for keyword_element in topic_element.xpath('.//ntcir-math:keyword', namespaces=XML_NAMESPACES):
+            text_tokens = [
+                Text(text_token)
+                for text_token in simple_preprocess(keyword_element.text)
+            ]
+            tokens.extend(text_tokens)
+
+        yield (topic_number, tokens)
+
+
+def ntcir_article_read_html5_worker(args):
     zip_filename, filename = args
     with ZipFile(zip_filename, 'r') as zf:
         with zf.open(filename, 'r') as f:
@@ -151,16 +177,6 @@ def write_single_tsv(count_tsv, read_tsv, write_tsv_worker, output_tsv_filename,
             100.0 * num_successful / num_total
         )
     )
-
-
-def latex_tokenize(mathml_tokens):
-    html5_parser = etree.HTMLParser()
-    math_tree = etree.XML(mathml_tokens.encode('utf-8'), html5_parser)
-    math_elements = math_tree.xpath('//math')
-    assert len(math_elements) > 0
-    math_element = math_elements[0]
-    math_tokens = [math_element.attrib['alttext']]
-    return math_tokens
 
 
 def opt_tokenize(mathml_tokens):

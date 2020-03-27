@@ -1,89 +1,69 @@
-#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import gzip
 import json
 from multiprocessing import Pool
-from zipfile import ZipFile
-
-from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
-from tqdm import tqdm
 import sys
 
-from .common import read_xhtml_worker, Text, Math, latex_tokenize as tokenize, unicode_to_tree, tree_to_unicode
-from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_XHTML_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_XHTML_NUM_DOCUMENTS, ARXMLIV_WARNING1_XHTML_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING1_XHTML_NUM_DOCUMENTS, ARXMLIV_WARNING2_XHTML_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING2_XHTML_NUM_DOCUMENTS
+from lxml import etree
+from tqdm import tqdm
+
+from .common import Math, Text, ntcir_topic_read_xhtml as read_xhtml, unicode_to_tree
+from .configuration import NTCIR11_MATH2_MAIN_TOPICS_XHTML_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_XHTML_NUM_TOPICS, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_NUM_TOPICS, XML_NAMESPACES, NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME, POOL_NUM_WORKERS, POOL_CHUNKSIZE
 
 
-assert sys.argv[1] in ('no_problem', 'warning_1', 'warning_2')
-if sys.argv[1] == 'no_problem':
-    ARXMLIV_XHTML_ZIP_FILENAME = ARXMLIV_NOPROBLEM_XHTML_ZIP_FILENAME
-    ARXMLIV_JSON_LATEX_FILENAME = ARXMLIV_NOPROBLEM_JSON_LATEX_FILENAME
-    ARXMLIV_JSON_LATEX_FAILURES_FILENAME = ARXMLIV_NOPROBLEM_JSON_LATEX_FAILURES_FILENAME
-    ARXMLIV_XHTML_NUM_DOCUMENTS = ARXMLIV_NOPROBLEM_XHTML_NUM_DOCUMENTS
-elif sys.argv[1] == 'warning_1':
-    ARXMLIV_XHTML_ZIP_FILENAME = ARXMLIV_WARNING_1_XHTML_ZIP_FILENAME
-    ARXMLIV_JSON_LATEX_FILENAME = ARXMLIV_WARNING_1_JSON_LATEX_FILENAME
-    ARXMLIV_JSON_LATEX_FAILURES_FILENAME = ARXMLIV_WARNING_1_JSON_LATEX_FAILURES_FILENAME
-    ARXMLIV_XHTML_NUM_DOCUMENTS = ARXMLIV_WARNING_1_XHTML_NUM_DOCUMENTS
+assert sys.argv[1] in ('ntcir-11-math-2-main', 'ntcir-12-mathir-arxiv-main')
+if sys.argv[1] == 'ntcir-11-math-2-main':
+    TOPICS_XHTML_FILENAME = NTCIR11_MATH2_MAIN_TOPICS_XHTML_FILENAME
+    TOPICS_XHTML_NUM_TOPICS = NTCIR11_MATH2_MAIN_TOPICS_XHTML_NUM_TOPICS
+    TOPICS_JSON_LATEX_FILENAME = NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FILENAME
+    TOPICS_JSON_LATEX_FAILURES_FILENAME = NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME
 else:
-    ARXMLIV_XHTML_ZIP_FILENAME = ARXMLIV_WARNING_2_XHTML_ZIP_FILENAME
-    ARXMLIV_JSON_LATEX_FILENAME = ARXMLIV_WARNING_2_JSON_LATEX_FILENAME
-    ARXMLIV_JSON_LATEX_FAILURES_FILENAME = ARXMLIV_WARNING_2_JSON_LATEX_FAILURES_FILENAME
-    ARXMLIV_XHTML_NUM_DOCUMENTS = ARXMLIV_WARNING_2_XHTML_NUM_DOCUMENTS
+    TOPICS_XHTML_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_FILENAME
+    TOPICS_XHTML_NUM_TOPICS = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_NUM_TOPICS
+    TOPICS_JSON_LATEX_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FILENAME
+    TOPICS_JSON_LATEX_FAILURES_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME
 
 
-def xhtml_filenames():
-    with ZipFile(ARXMLIV_XHTML_ZIP_FILENAME, 'r') as zf:
-        for filename in zf.namelist():
-            if filename.endswith('.html'):
-                yield (ARXMLIV_XHTML_ZIP_FILENAME, filename)
-
-
-def count_xhtmls():
-    num_documents = sum(1 for _ in tqdm(xhtml_filenames(), desc='Counting XHTML documents'))
-    assert num_documents == ARXMLIV_XHTML_NUM_DOCUMENTS, 'Archives contain {} documents instead of the expected {}'.format(
-        num_documents,
-        ARXMLIV_XHTML_NUM_DOCUMENTS,
+def count_xhtml():
+    xml_document = etree.parse(TOPICS_XHTML_FILENAME)
+    num_topics = len(xml_document.xpath('//ntcir-math:topic', namespaces=XML_NAMESPACES))
+    assert num_topics == TOPICS_XHTML_NUM_TOPICS, 'Document {} contains {} topics instead of the expected {}'.format(
+        TOPICS_XHTML_FILENAME,
+        num_topics,
+        TOPICS_XHTML_NUM_TOPICS,
     )
-    return num_documents
-
-
-def read_xhtmls():
-    with Pool(POOL_NUM_WORKERS) as pool:
-        for zip_filename, filename, document in pool.imap(read_xhtml_worker, xhtml_filenames(), POOL_CHUNKSIZE):
-            yield (zip_filename, filename, document)
+    return num_topics
 
 
 def write_json():
-    documents = tqdm(read_xhtmls(), total=count_xhtmls(), desc='Converting')
+    topics = tqdm(read_xhtml(TOPICS_XHTML_FILENAME), total=count_xhtml(), desc='Converting')
     num_successful = 0
     num_total = 0
-    with gzip.open(ARXMLIV_JSON_LATEX_FILENAME, 'wt') as f, open(ARXMLIV_JSON_LATEX_FAILURES_FILENAME, 'wt') as failures_f:
+    with open(TOPICS_JSON_LATEX_FILENAME, 'wt') as f, open(TOPICS_JSON_LATEX_FAILURES_FILENAME, 'wt') as failures_f:
         print('{', file=f)
         with Pool(POOL_NUM_WORKERS) as pool:
-            for partial_failure, zip_filename, filename, document in pool.imap(write_json_worker, documents, POOL_CHUNKSIZE):
+            for partial_failure, topic_number, topic in pool.imap(write_json_worker, topics, POOL_CHUNKSIZE):
                 num_total += 1
                 if partial_failure:
                     print(
-                        'Processing XHTML document {}/{} partially failed: \n{}'.format(
-                            zip_filename,
-                            filename,
+                        'Processing XHTML topic {} partially failed: \n{}'.format(
+                            topic_number,
                             partial_failure,
-                        ), file=failures_f
+                        ),
+                        file=failures_f
                     )
                 else:
                     num_successful += 1
                 print(
-                    '"{}/{}": {},'.format(
-                        zip_filename,
-                        filename,
-                        json.dumps(document),
+                    '"{}": {},'.format(
+                        topic_number,
+                        json.dumps(topic),
                     ),
                     file=f,
                 )
         print('}', file=f)
     print(
-        'Successfully processed {} XHTML documents out of {} ({:.2f}%)'.format(
+        'Successfully processed {} XHTML topics out of {} ({:.2f}%)'.format(
             num_successful,
             num_total,
             100.0 * num_successful / num_total
@@ -92,37 +72,33 @@ def write_json():
 
 
 def write_json_worker(args):
-    zip_filename, filename, input_paragraphs = args
-    output_paragraphs = []
+    topic_number, input_tokens = args
+    output_tokens = []
     partial_failure = []
-    for input_paragraph_number, input_paragraph in enumerate(input_paragraphs):
-        input_paragraph_number += 1
-        output_paragraph = []
-        input_math_token_number = 0
-        for input_token in input_paragraph:
-            assert isinstance(input_token, (Text, Math))
-            if isinstance(input_token, Text):
-                output_token = str(input_token)
-                output_paragraph.append(output_token)
-            else:
-                input_math_token_number += 1
-                try:
-                    mathml_tokens = input_token.math
-                    output_tokens = [
-                        str(Math(token))
-                        for token in tokenize(mathml_tokens)
-                    ]
-                    output_paragraph.extend(output_tokens)
-                except Exception as e:
-                    partial_failure.append(
-                        '- Processing paragraph #{}, formula #{} failed: {}'.format(
-                            input_paragraph_number,
-                            input_math_token_number,
-                            repr(e),
-                        )
+    input_math_token_number = 0
+    for input_token in input_tokens:
+        assert isinstance(input_token, (Text, Math))
+        if isinstance(input_token, Text):
+            output_token = str(input_token)
+            output_tokens.append(output_token)
+        else:
+            input_math_token_number += 1
+            try:
+                mathml_tokens = input_token.math
+                math_element = unicode_to_tree(mathml_tokens)
+                annotation_elements = math_element.xpath('//mathml:annotation[@encoding = "application/x-tex"]', namespaces=XML_NAMESPACES)
+                assert len(annotation_elements) == 1
+                annotation_element = annotation_elements[0]
+                output_token = str(Math(annotation_element.text))
+                output_tokens.append(output_token)
+            except Exception as e:
+                partial_failure.append(
+                    '- Processing formula #{} failed: {}'.format(
+                        input_math_token_number,
+                        repr(e),
                     )
-        output_paragraphs.append(output_paragraph)
-    return ('\n'.join(partial_failure), zip_filename, filename, output_paragraphs)
+                )
+    return (partial_failure, topic_number, output_tokens)
 
 
 if __name__ == '__main__':

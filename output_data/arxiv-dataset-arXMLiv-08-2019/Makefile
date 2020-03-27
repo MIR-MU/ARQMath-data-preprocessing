@@ -29,46 +29,46 @@ LATEX=NOPROBLEM_LATEX WARNING1_LATEX WARNING2_LATEX
 all: $(OPT) $(SLT) $(PREFIX) $(INFIX)
 
 $(NOPROBLEM_OPT):
-	$(RUN_SCRIPT) scripts.xhtml_to_opt_json no_problem
+	$(RUN_SCRIPT) scripts.html5_to_opt_json no_problem
 
 $(NOPROBLEM_SLT):
-	$(RUN_SCRIPT) scripts.xhtml_to_slt_json no_problem
+	$(RUN_SCRIPT) scripts.html5_to_slt_json no_problem
 
 $(NOPROBLEM_PREFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_prefix_json no_problem
+	$(RUN_SCRIPT) scripts.html5_to_prefix_json no_problem
 
 $(NOPROBLEM_INFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_infix_json no_problem
+	$(RUN_SCRIPT) scripts.html5_to_infix_json no_problem
 
 $(NOPROBLEM_LATEX):
-	$(RUN_SCRIPT) scripts.xhtml_to_latex_json no_problem
+	$(RUN_SCRIPT) scripts.html5_to_latex_json no_problem
 
 $(WARNING1_OPT):
-	$(RUN_SCRIPT) scripts.xhtml_to_opt_json warning_1
+	$(RUN_SCRIPT) scripts.html5_to_opt_json warning_1
 
 $(WARNING1_SLT):
-	$(RUN_SCRIPT) scripts.xhtml_to_slt_json warning_1
+	$(RUN_SCRIPT) scripts.html5_to_slt_json warning_1
 
 $(WARNING1_PREFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_prefix_json warning_1
+	$(RUN_SCRIPT) scripts.html5_to_prefix_json warning_1
 
 $(WARNING1_INFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_infix_json warning_1
+	$(RUN_SCRIPT) scripts.html5_to_infix_json warning_1
 
 $(WARNING1_LATEX):
-	$(RUN_SCRIPT) scripts.xhtml_to_latex_json warning_1
+	$(RUN_SCRIPT) scripts.html5_to_latex_json warning_1
 
 $(WARNING2_OPT):
-	$(RUN_SCRIPT) scripts.xhtml_to_opt_json warning_2
+	$(RUN_SCRIPT) scripts.html5_to_opt_json warning_2
 
 $(WARNING2_SLT):
-	$(RUN_SCRIPT) scripts.xhtml_to_slt_json warning_2
+	$(RUN_SCRIPT) scripts.html5_to_slt_json warning_2
 
 $(WARNING2_PREFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_prefix_json warning_2
+	$(RUN_SCRIPT) scripts.html5_to_prefix_json warning_2
 
 $(WARNING2_INFIX):
-	$(RUN_SCRIPT) scripts.xhtml_to_infix_json warning_2
+	$(RUN_SCRIPT) scripts.html5_to_infix_json warning_2
 
 $(WARNING2_LATEX):
-	$(RUN_SCRIPT) scripts.xhtml_to_latex_json warning_2
+	$(RUN_SCRIPT) scripts.html5_to_latex_json warning_2
