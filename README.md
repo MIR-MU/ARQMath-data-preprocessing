@@ -3,11 +3,16 @@
 This repository contains scripts for producting preprocessed [ARQMath
 competition][ARQMath] datasets:
 
-- `output_data/ARQMath_CLEF2020/Formulas/formula_*.V0.2.{tsv,failures}` – the training set of formulae for the [ARQMath competition][ARQMath],
-- `output_data/ARQMath_CLEF2020/Task1/Formula_topics_*_V1.2.{tsv,failures}` – the test set of formulae for the [ARQMath competition][ARQMath],
-- `output_data/arxiv-dataset-arXMLiv-08-2019/arxmliv_*_08_2019_*.json.gz.{json.gz,failures}` – tokenized documents and paragraphs from the [arXMLiv 08.2019 dataset][arXMLiv],
-- `output_data/ntcir/NTCIR11-Math/NTCIR11-Math2-queries-*-participants.{json,failures}` – tokenized topics from the [NTCIR-11 Math-2 Task Main Subtask][ntcir-11-math-2], and
-- `output_data/ntcir/NTCIR12-Math/NTCIR12-Math-queries-*-participants.{json,failures}` – tokenized topics from the [NTCIR-12 MathIR Task ArXiv Main Subtask][ntcir-12-mathir].
+- `output_data/ARQMath_CLEF2020/Formulas/formula_*.V0.2.{tsv,failures}`  
+  the training set of formulae for the [ARQMath competition][ARQMath],
+- `output_data/ARQMath_CLEF2020/Task1/Formula_topics_*_V1.2.{tsv,failures}`  
+  the test set of formulae for the [ARQMath competition][ARQMath],
+- `output_data/arxiv-dataset-arXMLiv-08-2019/arxmliv_*_08_2019_*.json.gz.{json.gz,failures}`  
+  tokenized documents and paragraphs from the [arXMLiv 08.2019 dataset][arXMLiv],
+- `output_data/ntcir/NTCIR11-Math/NTCIR11-Math2-queries-*-participants.{json,failures}`  
+  tokenized topics from the [NTCIR-11 Math-2 Task Main Subtask][ntcir-11-math-2], and
+- `output_data/ntcir/NTCIR12-Math/NTCIR12-Math-queries-*-participants.{json,failures}`  
+  tokenized topics from the [NTCIR-12 MathIR Task ArXiv Main Subtask][ntcir-12-mathir].
 
 ## Downloading the preprocessed datasets
 
