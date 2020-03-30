@@ -1,0 +1,13 @@
+md5: 8f81d1aa231bd08681c0dbc1293993e5
+outs:
+- path: NTCIR12-Math-queries-prefix-participants.json
+  cache: true
+  metric: false
+  md5: 71f09db88c9111f618f8a85d65229ff0
+  persist: false
+- path: NTCIR12-Math-queries-prefix-participants.failures
+  cache: true
+  metric: false
+  md5: 899de4fc6a5a00812a6ea90a9c11ad96
+  persist: false
+cmd: make NTCIR12-Math-queries-prefix-participants.json

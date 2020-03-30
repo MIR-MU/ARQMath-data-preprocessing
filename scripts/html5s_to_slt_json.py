@@ -36,7 +36,7 @@ def html5_filenames():
     with ZipFile(ARXMLIV_HTML5_ZIP_FILENAME, 'r') as zf:
         for filename in zf.namelist():
             if filename.endswith('.html'):
-                yield (ARXMLIV_HTML5_ZIP_FILENAME, filename)
+                yield (ARXMLIV_HTML5_ZIP_FILENAME, filename, False)
 
 
 def count_html5s():

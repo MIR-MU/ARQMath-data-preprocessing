@@ -6,12 +6,11 @@ import json
 from multiprocessing import Pool
 from zipfile import ZipFile
 
-from lxml import etree
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 import sys
 
-from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, latex_tokenize as tokenize, unicode_to_tree, tree_to_unicode
+from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, unicode_to_tree, tree_to_unicode
 from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_HTML5_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING1_HTML5_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING1_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING2_HTML5_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING2_HTML5_NUM_DOCUMENTS
 
 
@@ -37,7 +36,7 @@ def html5_filenames():
     with ZipFile(ARXMLIV_HTML5_ZIP_FILENAME, 'r') as zf:
         for filename in zf.namelist():
             if filename.endswith('.html'):
-                yield (ARXMLIV_HTML5_ZIP_FILENAME, filename)
+                yield (ARXMLIV_HTML5_ZIP_FILENAME, filename, True)
 
 
 def count_html5s():
@@ -110,12 +109,11 @@ def write_json_worker(args):
                 input_math_token_number += 1
                 try:
                     mathml_tokens = input_token.math
-                    html5_parser = etree.HTMLParser()
-                    math_tree = etree.XML(mathml_tokens.encode('utf-8'), html5_parser)
-                    math_elements = math_tree.xpath('//math')
-                    assert len(math_elements) > 0
-                    math_element = math_elements[0]
-                    output_token = str(Math(math_element.attrib['alttext']))
+                    math_tree = unicode_to_tree(mathml_tokens)
+                    annotation_elements = math_tree.xpath('//annotation[@encoding = "application/x-tex"]')
+                    assert len(annotation_elements) == 1
+                    annotation_element = annotation_elements[0]
+                    output_token = str(Math(annotation_element.text))
                     output_paragraph.append(output_token)
                 except Exception as e:
                     partial_failure.append(

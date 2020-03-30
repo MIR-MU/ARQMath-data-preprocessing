@@ -1,2 +1,10 @@
 /NTCIR12-Math-queries-latex-participants.json
 /NTCIR12-Math-queries-latex-participants.failures
+/NTCIR12-Math-queries-infix-participants.json
+/NTCIR12-Math-queries-infix-participants.failures
+/NTCIR12-Math-queries-opt-participants.json
+/NTCIR12-Math-queries-opt-participants.failures
+/NTCIR12-Math-queries-prefix-participants.json
+/NTCIR12-Math-queries-prefix-participants.failures
+/NTCIR12-Math-queries-slt-participants.json
+/NTCIR12-Math-queries-slt-participants.failures

@@ -1,4 +1,4 @@
-md5: 2e493c360025a7cdf14262e2d29b7f5b
+md5: 4467befd1994bbe27c258acbf2241611
 outs:
 - path: NTCIR12-Math-queries-latex-participants.json
   cache: true

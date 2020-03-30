@@ -14,7 +14,7 @@ import n2w
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS, XML_NAMESPACES, ETREE_TOSTRING_PARAMETERS, LATEXMLC, MATHMLCAN, TSV_OPT_INFIX_OPERATORS
+from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS, XML_NAMESPACES, ETREE_TOSTRING_PARAMETERS, LATEXMLC, MATHMLCAN, TSV_OPT_INFIX_OPERATORS, XMLLINT
 
 
 class Text(object):
@@ -44,7 +44,9 @@ def simple_preprocess(text):
 
 
 def ntcir_topic_read_xhtml(filename):
-    xml_document = etree.parse(filename)
+    with open(filename, 'rt') as f:
+        xml_tokens = mathmlcan(f.read())
+        xml_document = unicode_to_tree(xml_tokens)
     for topic_element in xml_document.xpath('//ntcir-math:topic', namespaces=XML_NAMESPACES):
         topic_number_elements = topic_element.xpath('.//ntcir-math:num', namespaces=XML_NAMESPACES)
         assert len(topic_number_elements) == 1
@@ -53,7 +55,9 @@ def ntcir_topic_read_xhtml(filename):
 
         tokens = []
         for math_element in topic_element.xpath('.//ntcir-math:formula/mathml:math', namespaces=XML_NAMESPACES):
-            math_token = Math(resolve_share_elements(tree_to_unicode(math_element)))
+            etree.strip_tags(math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
+            math_element = remove_namespaces(copy(math_element))
+            math_token = Math(tree_to_unicode(math_element))
             tokens.append(math_token)
         for keyword_element in topic_element.xpath('.//ntcir-math:keyword', namespaces=XML_NAMESPACES):
             text_tokens = [
@@ -66,11 +70,16 @@ def ntcir_topic_read_xhtml(filename):
 
 
 def ntcir_article_read_html5_worker(args):
-    zip_filename, filename = args
+    zip_filename, filename, only_latex = args
     with ZipFile(zip_filename, 'r') as zf:
         with zf.open(filename, 'r') as f:
-            html5_parser = etree.HTMLParser()
-            xml_document = etree.parse(f, html5_parser)
+            if only_latex:
+                html5_parser = etree.HTMLParser()
+                xml_document = etree.parse(f, html5_parser)
+            else:
+                html5_tokens = f.read().decode('utf-8')
+                xml_tokens = mathmlcan(html5_to_xhtml(html5_tokens))
+                xml_document = unicode_to_tree(xml_tokens)
             math_tokens = {}
             for math_element_number, math_element in enumerate(xml_document.xpath('//p/math')):
                 math_element_token = 'math_element_{}___'.format(
@@ -78,17 +87,14 @@ def ntcir_article_read_html5_worker(args):
                 )
                 replacement = etree.Element("span")
                 replacement.text = math_element_token
+                if math_element.tail:
+                    replacement.text += ' ' + math_element.tail
                 math_element.getparent().replace(math_element, replacement)
-                math_tokens[math_element_token] = Math(
-                    resolve_share_elements(tree_to_unicode(math_element))
-                )
+                math_tokens[math_element_token] = Math(tree_to_unicode(math_element))
             document = [
                 [
                     math_tokens[token] if token in math_tokens else Text(token)
-                    for token in simple_preprocess(
-                        ' '.join(paragraph.itertext()),
-                        max_len=float('inf'),
-                    )
+                    for token in simple_preprocess(' '.join(paragraph.itertext()))
                 ]
                 for paragraph in xml_document.xpath('//div[contains(@class, "ltx_para")]')
             ]
@@ -105,6 +111,13 @@ def resolve_share_elements(math_tokens):
         else:
             share_element.decompose()
     return str(math_element)
+
+
+def remove_namespaces(tree):
+    for element in tree.xpath('descendant-or-self::*[namespace-uri()!=""]'):
+        element.tag = etree.QName(element).localname
+    etree.cleanup_namespaces(tree)
+    return tree
 
 
 def unicode_to_tree(text):
@@ -138,6 +151,19 @@ def mathmlcan(xml_input):
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     ).communicate(xml_input)[0]
+    xml_output = xml_output.decode('utf-8')
+    return xml_output
+
+
+def html5_to_xhtml(html5_input):
+    html5_input = html5_input.encode('utf-8')
+    xml_output = subprocess.Popen(
+        XMLLINT,
+        shell=False,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).communicate(html5_input)[0]
     xml_output = xml_output.decode('utf-8')
     return xml_output
 

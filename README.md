@@ -29,6 +29,7 @@ To produce the preprocessed datasets yourself,
 
 - install [LaTeXML version 0.8.4][latexml],
 - install [MathMLCan commit `3d66b66`][mathmlcan],
+- install [xmllint version 20904 ][xmllint],
 - update paths for MathMLCan and for the input datasets in `scripts/configuration.py`,
 - run the following commands:
     ```sh
@@ -42,3 +43,4 @@ To produce the preprocessed datasets yourself,
  [mathmlcan]:       https://github.com/MIR-MU/MathMLCan (MathMLCan – Canonicalization of different MathML encodings of equivalent formulae)
  [ntcir-11-math-2]: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.686.444&rep=rep1&type=pdf (NTCIR-11 Math-2 Task Overview)
  [ntcir-12-mathir]: https://www.cs.rit.edu/~rlaz/files/ntcir12-mathir.pdf (NTCIR-12 MathIR Task Overview)
+ [xmllint]:         http://xmlsoft.org/xmllint.html (xmllint — command line XML tool)

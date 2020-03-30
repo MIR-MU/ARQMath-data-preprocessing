@@ -1,0 +1,13 @@
+md5: 54bef1674adfc7d4ce9ca597a3769f72
+outs:
+- metric: false
+  persist: false
+  cache: true
+  md5: ee3f15f07eebf652f28497c9b61c6801
+  path: NTCIR11-Math2-queries-infix-participants.json
+- metric: false
+  persist: false
+  cache: true
+  md5: 895a29d5235fd007b5ee6f42ca4f5ebb
+  path: NTCIR11-Math2-queries-infix-participants.failures
+cmd: make NTCIR11-Math2-queries-infix-participants.json
