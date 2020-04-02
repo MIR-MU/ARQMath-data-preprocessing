@@ -1,0 +1,13 @@
+outs:
+- persist: false
+  metric: false
+  path: MathTagArticles_prefix.json.gz
+  cache: true
+  md5: bc77c53b2687af0e706749a772af3780
+- persist: false
+  metric: false
+  path: MathTagArticles_prefix.failures
+  cache: true
+  md5: 7a40de2852bf0a7af42d5906aa06d803
+md5: 8e73cff455b166792d1133151e160048
+cmd: make MathTagArticles_prefix.json.gz

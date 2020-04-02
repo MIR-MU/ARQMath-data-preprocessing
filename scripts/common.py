@@ -14,7 +14,7 @@ import n2w
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS, XML_NAMESPACES, ETREE_TOSTRING_PARAMETERS, LATEXMLC, MATHMLCAN, TSV_OPT_INFIX_OPERATORS, XMLLINT
+from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, CSV_PARAMETERS, XML_NAMESPACES, ETREE_TOSTRING_PARAMETERS, LATEXMLC, MATHMLCAN, TSV_OPT_INFIX_OPERATORS, XMLLINT, SUBPROCESS_TIMEOUT
 
 
 class Text(object):
@@ -47,19 +47,19 @@ def ntcir_topic_read_xhtml(filename):
     with open(filename, 'rt') as f:
         xml_tokens = mathmlcan(f.read())
         xml_document = unicode_to_tree(xml_tokens)
-    for topic_element in xml_document.xpath('//ntcir-math:topic', namespaces=XML_NAMESPACES):
-        topic_number_elements = topic_element.xpath('.//ntcir-math:num', namespaces=XML_NAMESPACES)
+    for topic_element in xml_document.xpath('//ntcir-math:topic | //mathml:topic', namespaces=XML_NAMESPACES):
+        topic_number_elements = topic_element.xpath('.//ntcir-math:num | .//mathml:num', namespaces=XML_NAMESPACES)
         assert len(topic_number_elements) == 1
         topic_number_element = topic_number_elements[0]
         topic_number = topic_number_element.text
 
         tokens = []
-        for math_element in topic_element.xpath('.//ntcir-math:formula/mathml:math', namespaces=XML_NAMESPACES):
+        for math_element in topic_element.xpath('.//ntcir-math:formula/mathml:math | .//mathml:formula/mathml:math', namespaces=XML_NAMESPACES):
             etree.strip_tags(math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
             math_element = remove_namespaces(copy(math_element))
             math_token = Math(tree_to_unicode(math_element))
             tokens.append(math_token)
-        for keyword_element in topic_element.xpath('.//ntcir-math:keyword', namespaces=XML_NAMESPACES):
+        for keyword_element in topic_element.xpath('.//ntcir-math:keyword | .//mathml:keyword', namespaces=XML_NAMESPACES):
             text_tokens = [
                 Text(text_token)
                 for text_token in simple_preprocess(keyword_element.text)
@@ -67,6 +67,15 @@ def ntcir_topic_read_xhtml(filename):
             tokens.extend(text_tokens)
 
         yield (topic_number, tokens)
+
+
+def ntcir_article_read_xhtml_worker(filename):
+    formulae = []
+    with open(filename, 'r') as f:
+        xml_document = unicode_to_tree(resolve_share_elements(f.read()))
+        for math_element in xml_document.xpath('//xhtml:math[@id]', namespaces=XML_NAMESPACES):
+            formulae.append((math_element.attrib['id'], Math(tree_to_unicode(math_element))))
+    return filename, formulae
 
 
 def ntcir_article_read_html5_worker(args):
@@ -101,16 +110,17 @@ def ntcir_article_read_html5_worker(args):
         return (zip_filename, filename, document)
 
 
-def resolve_share_elements(math_tokens):
-    math_element = BeautifulSoup(math_tokens, 'lxml')
-    for share_element in math_element.find_all('share'):
-        assert share_element['href'].startswith('#')
-        shared_element = math_element.find(id=share_element['href'][1:])
-        if shared_element:
-            share_element.replace_with(copy(shared_element))
-        else:
-            share_element.decompose()
-    return str(math_element)
+def resolve_share_elements(xml_tokens):
+    xml_document = BeautifulSoup(xml_tokens, 'lxml')
+    for math_element in xml_document.find_all('math'):
+        for share_element in math_element.find_all('share'):
+            assert share_element['href'].startswith('#')
+            shared_element = math_element.find(id=share_element['href'][1:])
+            if shared_element:
+                share_element.replace_with(copy(shared_element))
+            else:
+                share_element.decompose()
+    return str(xml_document)
 
 
 def remove_namespaces(tree):
@@ -121,7 +131,8 @@ def remove_namespaces(tree):
 
 
 def unicode_to_tree(text):
-    return etree.XML(text.encode(ETREE_TOSTRING_PARAMETERS['encoding']))
+    xml_parser = etree.XMLParser(huge_tree=True)
+    return etree.XML(text.encode(ETREE_TOSTRING_PARAMETERS['encoding']), xml_parser)
 
 
 def tree_to_unicode(tree):
@@ -136,7 +147,10 @@ def latexml(latex_input):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
-    ).communicate(latex_input)[0]
+    ).communicate(
+        latex_input,
+        timeout=SUBPROCESS_TIMEOUT,
+    )[0]
     xml_output = xml_output.decode('utf-8')
     return xml_output
 
@@ -150,7 +164,10 @@ def mathmlcan(xml_input):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
-    ).communicate(xml_input)[0]
+    ).communicate(
+        xml_input,
+        timeout=SUBPROCESS_TIMEOUT,
+    )[0]
     xml_output = xml_output.decode('utf-8')
     return xml_output
 
@@ -163,7 +180,10 @@ def html5_to_xhtml(html5_input):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
-    ).communicate(html5_input)[0]
+    ).communicate(
+        html5_input,
+        timeout=SUBPROCESS_TIMEOUT,
+    )[0]
     xml_output = xml_output.decode('utf-8')
     return xml_output
 

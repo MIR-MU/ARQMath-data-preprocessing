@@ -1,0 +1,13 @@
+md5: 0462fa27b85a53e0d4d3b8afb7cbeb0a
+outs:
+- path: NTCIR12-MathWikiFormula-queries-slt-participants.json
+  cache: true
+  metric: false
+  md5: 27b659906d4602c06497132ab16ae0f8
+  persist: false
+- path: NTCIR12-MathWikiFormula-queries-slt-participants.failures
+  cache: true
+  metric: false
+  md5: d41d8cd98f00b204e9800998ecf8427e
+  persist: false
+cmd: make NTCIR12-MathWikiFormula-queries-slt-participants.json

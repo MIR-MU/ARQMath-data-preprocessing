@@ -6,7 +6,6 @@ import json
 from multiprocessing import Pool
 from zipfile import ZipFile
 
-from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 import sys
 
@@ -111,7 +110,7 @@ def write_json_worker(args):
                     mathml_tokens = input_token.math
                     math_tree = unicode_to_tree(mathml_tokens)
                     annotation_elements = math_tree.xpath('//annotation[@encoding = "application/x-tex"]')
-                    assert len(annotation_elements) == 1
+                    assert len(annotation_elements) > 0
                     annotation_element = annotation_elements[0]
                     output_token = str(Math(annotation_element.text))
                     output_paragraph.append(output_token)

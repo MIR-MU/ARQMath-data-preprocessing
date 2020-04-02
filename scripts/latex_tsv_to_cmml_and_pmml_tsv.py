@@ -110,67 +110,77 @@ def write_tsv_worker(latex_rows):
         'Formula #{}:\n\[{}\]'.format(latex_row[0], latex_row[-1])
         for latex_row in latex_rows
     )
-    xml_output = mathmlcan(latexml(latex_input))
-
     cmml_rows = []
     pmml_rows = []
     try:
-        xml_document = unicode_to_tree(xml_output)
-        for latex_row in latex_rows:
-            math_elements = xml_document.xpath(
-                '//xhtml:div[@class = "ltx_para" and xhtml:p[@class = "ltx_p" and normalize-space(text()) = "Formula #{}:"]]//mathml:math'.format(latex_row[0]),
-                namespaces=XML_NAMESPACES
-            )
-            if len(math_elements) >= 1:
-                math_element = math_elements[0]
-                math_tokens = tree_to_unicode(math_element)
-                try:
-                    cmml_math_element = unicode_to_tree(MathExtractor.isolate_cmml(math_tokens))
-                    pmml_math_element = unicode_to_tree(MathExtractor.isolate_pmml(math_tokens))
-                    if cmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
+        xml_output = mathmlcan(latexml(latex_input))
+        try:
+            xml_document = unicode_to_tree(xml_output)
+            for latex_row in latex_rows:
+                math_elements = xml_document.xpath(
+                    '//xhtml:div[@class = "ltx_para" and xhtml:p[@class = "ltx_p" and normalize-space(text()) = "Formula #{}:"]]//mathml:math'.format(latex_row[0]),
+                    namespaces=XML_NAMESPACES
+                )
+                if len(math_elements) >= 1:
+                    math_element = math_elements[0]
+                    math_tokens = tree_to_unicode(math_element)
+                    try:
+                        cmml_math_element = unicode_to_tree(MathExtractor.isolate_cmml(math_tokens))
+                        pmml_math_element = unicode_to_tree(MathExtractor.isolate_pmml(math_tokens))
+                        if cmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
+                            cmml_math_tokens = ''
+                            cmml_failure = ValueError('LaTeXML output contains <cerror> elements')
+                        else:
+                            etree.strip_tags(cmml_math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
+                            cmml_math_tokens = tree_to_unicode(cmml_math_element)
+                            cmml_failure = None
+                        if pmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
+                            pmml_math_tokens = ''
+                            pmml_failure = ValueError('LaTeXML output contains <cerror> elements')
+                        else:
+                            pmml_math_tokens = tree_to_unicode(pmml_math_element)
+                            pmml_failure = None
+                    except Exception as e:
                         cmml_math_tokens = ''
-                        cmml_failure = ValueError('LaTeXML output contains <cerror> elements')
-                    else:
-                        etree.strip_tags(cmml_math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
-                        cmml_math_tokens = tree_to_unicode(cmml_math_element)
-                        cmml_failure = None
-                    if pmml_math_element.xpath('//mathml:cerror', namespaces=XML_NAMESPACES):
                         pmml_math_tokens = ''
-                        pmml_failure = ValueError('LaTeXML output contains <cerror> elements')
-                    else:
-                        pmml_math_tokens = tree_to_unicode(pmml_math_element)
-                        pmml_failure = None
-                except Exception as e:
+                        cmml_failure = e
+                        pmml_failure = e
+                else:
                     cmml_math_tokens = ''
                     pmml_math_tokens = ''
-                    cmml_failure = e
-                    pmml_failure = e
+                    cmml_failure = ValueError('Formula not found in LaTeXML output')
+                    pmml_failure = ValueError('Formula not found in LaTeXML output')
+                cmml_row = latex_row[:-1] + [cmml_math_tokens]
+                pmml_row = latex_row[:-1] + [pmml_math_tokens]
+                cmml_rows.append((cmml_failure, cmml_row))
+                pmml_rows.append((pmml_failure, pmml_row))
+        except etree.Error as e:  # LaTeXML conversion failed, try halving latex_rows
+            assert len(latex_rows) > 0
+            if len(latex_rows) > 1:
+                latex_rows_head = latex_rows[:len(latex_rows) // 2]
+                latex_rows_tail = latex_rows[len(latex_rows) // 2:]
+                cmml_rows_head, pmml_rows_head = write_tsv_worker(latex_rows_head)
+                cmml_rows_tail, pmml_rows_tail = write_tsv_worker(latex_rows_tail)
+                cmml_rows.extend(cmml_rows_head + cmml_rows_tail)
+                pmml_rows.extend(pmml_rows_head + pmml_rows_tail)
             else:
+                latex_row = latex_rows[0]
                 cmml_math_tokens = ''
                 pmml_math_tokens = ''
-                cmml_failure = ValueError('Formula not found in LaTeXML output')
-                pmml_failure = ValueError('Formula not found in LaTeXML output')
+                cmml_row = latex_row[:-1] + [cmml_math_tokens]
+                pmml_row = latex_row[:-1] + [pmml_math_tokens]
+                cmml_failure = ValueError(e.msg)
+                pmml_failure = ValueError(e.msg)
+                cmml_rows.append((cmml_failure, cmml_row))
+                pmml_rows.append((pmml_failure, pmml_row))
+    except subprocess.SubprocessError as e:
+        cmml_math_tokens = ''
+        pmml_math_tokens = ''
+        cmml_failure = e
+        pmml_failure = e
+        for latex_row in latex_rows:
             cmml_row = latex_row[:-1] + [cmml_math_tokens]
             pmml_row = latex_row[:-1] + [pmml_math_tokens]
-            cmml_rows.append((cmml_failure, cmml_row))
-            pmml_rows.append((pmml_failure, pmml_row))
-    except etree.Error as e:  # LaTeXML conversion failed, try halving latex_rows
-        assert len(latex_rows) > 0
-        if len(latex_rows) > 1:
-            latex_rows_head = latex_rows[:len(latex_rows) // 2]
-            latex_rows_tail = latex_rows[len(latex_rows) // 2:]
-            cmml_rows_head, pmml_rows_head = write_tsv_worker(latex_rows_head)
-            cmml_rows_tail, pmml_rows_tail = write_tsv_worker(latex_rows_tail)
-            cmml_rows.extend(cmml_rows_head + cmml_rows_tail)
-            pmml_rows.extend(pmml_rows_head + pmml_rows_tail)
-        else:
-            latex_row = latex_rows[0]
-            cmml_math_tokens = ''
-            pmml_math_tokens = ''
-            cmml_row = latex_row[:-1] + [cmml_math_tokens]
-            pmml_row = latex_row[:-1] + [pmml_math_tokens]
-            cmml_failure = ValueError(e.msg)
-            pmml_failure = ValueError(e.msg)
             cmml_rows.append((cmml_failure, cmml_row))
             pmml_rows.append((pmml_failure, pmml_row))
     return (cmml_rows, pmml_rows)

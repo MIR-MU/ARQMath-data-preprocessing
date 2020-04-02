@@ -1,0 +1,13 @@
+outs:
+- persist: false
+  metric: false
+  path: MathTagArticles_infix.json.gz
+  cache: true
+  md5: e9894e508fa2c03bd6f0b18264522e67
+- persist: false
+  metric: false
+  path: MathTagArticles_infix.failures
+  cache: true
+  md5: 7a40de2852bf0a7af42d5906aa06d803
+md5: aef7c918779fc61f979c99bbbc7c0073
+cmd: make MathTagArticles_infix.json.gz
