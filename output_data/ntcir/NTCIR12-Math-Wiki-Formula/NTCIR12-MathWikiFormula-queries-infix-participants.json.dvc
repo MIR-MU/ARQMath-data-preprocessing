@@ -1,13 +1,13 @@
-md5: 7d782aa6a3497e19cd28581952c40cf6
+md5: bbe5d5ae748f6a10f24b9e22b8bf8e79
 outs:
 - path: NTCIR12-MathWikiFormula-queries-infix-participants.json
   cache: true
   metric: false
-  md5: 3680b17ccca5986a34d0d01ba2ad8109
+  md5: 697744f232a517a044afc555ac922644
   persist: false
 - path: NTCIR12-MathWikiFormula-queries-infix-participants.failures
   cache: true
   metric: false
-  md5: b94c6e4a3eadd9e33cf0975ed8891f66
+  md5: d41d8cd98f00b204e9800998ecf8427e
   persist: false
 cmd: make NTCIR12-MathWikiFormula-queries-infix-participants.json

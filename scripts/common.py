@@ -43,9 +43,12 @@ def simple_preprocess(text):
     return gensim_simple_preprocess(text, max_len=float('inf'))
 
 
-def ntcir_topic_read_xhtml(filename):
+def ntcir_topic_read_xhtml(filename, normalize_math):
     with open(filename, 'rt') as f:
-        xml_tokens = mathmlcan(f.read())
+        if normalize_math:
+            xml_tokens = mathmlcan(f.read())
+        else:
+            xml_tokens = f.read()
         xml_document = unicode_to_tree(xml_tokens)
     for topic_element in xml_document.xpath('//ntcir-math:topic | //mathml:topic', namespaces=XML_NAMESPACES):
         topic_number_elements = topic_element.xpath('.//ntcir-math:num | .//mathml:num', namespaces=XML_NAMESPACES)

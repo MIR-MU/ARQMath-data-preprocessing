@@ -1,13 +1,13 @@
-md5: 2058f8dc1e651e9e2aa96693a5970d29
+md5: 8b0b7d2003a62682e21bf44930ec9956
 outs:
 - path: NTCIR12-MathWikiFormula-queries-prefix-participants.json
   cache: true
   metric: false
-  md5: 9e06bd7b89b086abb737a39e707275ec
+  md5: 61286a9c37fd6e4ee416050d1446b745
   persist: false
 - path: NTCIR12-MathWikiFormula-queries-prefix-participants.failures
   cache: true
   metric: false
-  md5: b94c6e4a3eadd9e33cf0975ed8891f66
+  md5: d41d8cd98f00b204e9800998ecf8427e
   persist: false
 cmd: make NTCIR12-MathWikiFormula-queries-prefix-participants.json
