@@ -4,11 +4,12 @@
 import gzip
 import json
 from multiprocessing import Pool
+import os.path
+import sys
 from zipfile import ZipFile
 
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
-import sys
 
 from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, prefix_tokenize as tokenize
 from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_HTML5_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_PREFIX_FILENAME, ARXMLIV_NOPROBLEM_JSON_PREFIX_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING1_HTML5_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_PREFIX_FILENAME, ARXMLIV_WARNING1_JSON_PREFIX_FAILURES_FILENAME, ARXMLIV_WARNING1_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING2_HTML5_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_PREFIX_FILENAME, ARXMLIV_WARNING2_JSON_PREFIX_FAILURES_FILENAME, ARXMLIV_WARNING2_HTML5_NUM_DOCUMENTS
@@ -74,14 +75,15 @@ def write_json():
                     )
                 else:
                     num_successful += 1
-                print(
-                    '"{}/{}": {},'.format(
-                        zip_filename,
-                        filename,
-                        json.dumps(document),
-                    ),
-                    file=f,
-                )
+                for paragraph_number, paragraph in enumerate(document):
+                    print(
+                        '"{}_1_{}": {},'.format(
+                            os.path.basename(filename)[:-5],
+                            paragraph_number + 1,
+                            json.dumps(paragraph),
+                        ),
+                        file=f,
+                    )
         print('}', file=f)
     print(
         'Successfully processed {} HTML5 documents out of {} ({:.2f}%)'.format(

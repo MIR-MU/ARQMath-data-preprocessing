@@ -74,8 +74,9 @@ def ntcir_topic_read_xhtml(filename, normalize_math):
 
 def ntcir_article_read_xhtml_worker(filename):
     formulae = []
-    with open(filename, 'r') as f:
-        xml_document = unicode_to_tree(resolve_share_elements(f.read()))
+    with open(filename, 'rt') as f:
+        xhtml_tokens = f.read()
+        xml_document = unicode_to_tree(resolve_share_elements(xhtml_tokens))
         for math_element in xml_document.xpath('//xhtml:math[@id]', namespaces=XML_NAMESPACES):
             formulae.append((math_element.attrib['id'], Math(tree_to_unicode(math_element))))
     return filename, formulae
@@ -86,14 +87,14 @@ def ntcir_article_read_html5_worker(args):
     with ZipFile(zip_filename, 'r') as zf:
         with zf.open(filename, 'r') as f:
             if only_latex:
-                html5_parser = etree.HTMLParser()
+                html5_parser = etree.HTMLParser(huge_tree=True)
                 xml_document = etree.parse(f, html5_parser)
             else:
                 html5_tokens = f.read().decode('utf-8')
                 xml_tokens = mathmlcan(html5_to_xhtml(html5_tokens))
                 xml_document = unicode_to_tree(xml_tokens)
             math_tokens = {}
-            for math_element_number, math_element in enumerate(xml_document.xpath('//p/math')):
+            for math_element_number, math_element in enumerate(xml_document.xpath('//math')):
                 math_element_token = 'math_element_{}___'.format(
                     re.sub(r'\s+', '_', n2w.convert(math_element_number))
                 )

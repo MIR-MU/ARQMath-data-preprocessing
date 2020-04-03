@@ -1,0 +1,16 @@
+md5: 35ef0ee2637f223c2b140828f72fa99a
+outs:
+- md5: 1db7c9ef50594e17b552e1900ec3a4be
+  metric: false
+  persist: false
+  cache: true
+  path: Formula_topics_prefix_V2.0.tsv
+- md5: 58ab641f82518660e5a8b7c69d2687f5
+  metric: false
+  persist: false
+  cache: true
+  path: Formula_topics_prefix_V2.0.failures
+deps:
+- md5: c3e21cef034b29776f400f0c84eb6653
+  path: Formula_topics_cmml_V2.0.tsv
+cmd: make Formula_topics_prefix_V2.0.tsv Formula_topics_prefix_V2.0.failures

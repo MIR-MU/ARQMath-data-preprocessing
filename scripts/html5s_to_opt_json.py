@@ -4,6 +4,7 @@
 import gzip
 import json
 from multiprocessing import Pool
+import os.path
 import sys
 from zipfile import ZipFile
 
@@ -74,14 +75,15 @@ def write_json():
                     )
                 else:
                     num_successful += 1
-                print(
-                    '"{}/{}": {},'.format(
-                        zip_filename,
-                        filename,
-                        json.dumps(document),
-                    ),
-                    file=f,
-                )
+                for paragraph_number, paragraph in enumerate(document):
+                    print(
+                        '"{}_1_{}": {},'.format(
+                            os.path.basename(filename)[:-5],
+                            paragraph_number + 1,
+                            json.dumps(paragraph),
+                        ),
+                        file=f,
+                    )
         print('}', file=f)
     print(
         'Successfully processed {} HTML5 documents out of {} ({:.2f}%)'.format(
