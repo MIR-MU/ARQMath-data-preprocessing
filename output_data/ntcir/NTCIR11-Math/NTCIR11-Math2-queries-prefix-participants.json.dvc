@@ -1,9 +1,9 @@
-md5: 6a6496f647afe576bb69874fd4991d91
+md5: 10fba7aa5e6cd1214d5060f03dfbeb2a
 outs:
 - metric: false
   persist: false
   cache: true
-  md5: 05cb8c8d02aadfed18ce759b7039d746
+  md5: 427be880f20bb8b23ad6bf27801e1e8d
   path: NTCIR11-Math2-queries-prefix-participants.json
 - metric: false
   persist: false

@@ -1,9 +1,9 @@
-md5: 21b6955f9c07042f5297bb14df345b94
+md5: 5b55e19715a9b9ba61620b5aaeb58d14
 outs:
 - path: NTCIR12-Math-queries-opt-participants.json
   cache: true
   metric: false
-  md5: 4ff946851cbdc8ee8d05f592667b8a88
+  md5: d97a9fbe8973cd867878154af052ce0a
   persist: false
 - path: NTCIR12-Math-queries-opt-participants.failures
   cache: true

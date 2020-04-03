@@ -55,7 +55,6 @@ def ntcir_topic_read_xhtml(filename, normalize_math):
         assert len(topic_number_elements) == 1
         topic_number_element = topic_number_elements[0]
         topic_number = topic_number_element.text
-
         tokens = []
         for math_element in topic_element.xpath('.//ntcir-math:formula/mathml:math | .//mathml:formula/mathml:math', namespaces=XML_NAMESPACES):
             etree.strip_tags(math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
@@ -63,12 +62,7 @@ def ntcir_topic_read_xhtml(filename, normalize_math):
             math_token = Math(tree_to_unicode(math_element))
             tokens.append(math_token)
         for keyword_element in topic_element.xpath('.//ntcir-math:keyword | .//mathml:keyword', namespaces=XML_NAMESPACES):
-            text_tokens = [
-                Text(text_token)
-                for text_token in simple_preprocess(keyword_element.text)
-            ]
-            tokens.extend(text_tokens)
-
+            tokens.append(Text(keyword_element.text))
         yield (topic_number, tokens)
 
 

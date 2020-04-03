@@ -8,7 +8,7 @@ from lxml import etree
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from .common import Math, Text, ntcir_topic_read_xhtml as read_xhtml, unicode_to_tree, prefix_tokenize as tokenize
+from .common import Math, Text, ntcir_topic_read_xhtml as read_xhtml, unicode_to_tree, prefix_tokenize as tokenize, simple_preprocess
 from .configuration import NTCIR11_MATH2_MAIN_TOPICS_XHTML_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_JSON_PREFIX_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_XHTML_NUM_TOPICS, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_PREFIX_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_NUM_TOPICS, XML_NAMESPACES, NTCIR11_MATH2_MAIN_TOPICS_JSON_PREFIX_FAILURES_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_PREFIX_FAILURES_FILENAME, POOL_NUM_WORKERS, POOL_CHUNKSIZE, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_PREFIX_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_PREFIX_FAILURES_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_NUM_TOPICS
 
 
@@ -88,7 +88,10 @@ def write_json_worker(args):
     for input_token in input_tokens:
         assert isinstance(input_token, (Text, Math))
         if isinstance(input_token, Text):
-            output_token = str(input_token)
+            output_token = [
+                str(Text(token))
+                for token in simple_preprocess(input_token.text)
+            ]
             output_tokens.append(output_token)
         else:
             input_math_token_number += 1
@@ -98,7 +101,7 @@ def write_json_worker(args):
                     str(Math(token))
                     for token in tokenize(math_element)
                 ]
-                output_tokens.extend(output_math_tokens)
+                output_tokens.append(output_math_tokens)
             except Exception as e:
                 partial_failure.append(
                     '- Processing formula #{} failed: {}'.format(
