@@ -2,17 +2,17 @@
 
 RUN_SCRIPT=cd ../../.. && python3 -m
 
-OPT_TOPICS=NTCIR12-MathWikiFormula-queries-opt-participants.json NTCIR12-MathWikiFormula-queries-opt-participants.failures
-SLT_TOPICS=NTCIR12-MathWikiFormula-queries-slt-participants.json NTCIR12-MathWikiFormula-queries-slt-participants.failures
-PREFIX_TOPICS=NTCIR12-MathWikiFormula-queries-prefix-participants.json NTCIR12-MathWikiFormula-queries-prefix-participants.failures
-INFIX_TOPICS=NTCIR12-MathWikiFormula-queries-infix-participants.json NTCIR12-MathWikiFormula-queries-infix-participants.failures
-LATEX_TOPICS=NTCIR12-MathWikiFormula-queries-latex-participants.json NTCIR12-MathWikiFormula-queries-latex-participants.failures
+OPT_TOPICS=NTCIR12-MathWikiFormula-queries-opt-participants.json
+SLT_TOPICS=NTCIR12-MathWikiFormula-queries-slt-participants.json
+PREFIX_TOPICS=NTCIR12-MathWikiFormula-queries-prefix-participants.json
+INFIX_TOPICS=NTCIR12-MathWikiFormula-queries-infix-participants.json
+LATEX_TOPICS=NTCIR12-MathWikiFormula-queries-latex-participants.json
 
-OPT_DATA=MathTagArticles_opt.json.gz MathTagArticles_opt.failures
-SLT_DATA=MathTagArticles_slt.json.gz MathTagArticles_slt.failures
-PREFIX_DATA=MathTagArticles_prefix.json.gz MathTagArticles_prefix.failures
-INFIX_DATA=MathTagArticles_infix.json.gz MathTagArticles_infix.failures
-LATEX_DATA=MathTagArticles_latex.json.gz MathTagArticles_latex.failures
+OPT_DATA=MathTagArticles_opt.json.gz
+SLT_DATA=MathTagArticles_slt.json.gz
+PREFIX_DATA=MathTagArticles_prefix.json.gz
+INFIX_DATA=MathTagArticles_infix.json.gz
+LATEX_DATA=MathTagArticles_latex.json.gz
 
 OPT=$(OPT_TOPICS) $(OPT_DATA)
 SLT=$(SLT_TOPICS) $(SLT_DATA)

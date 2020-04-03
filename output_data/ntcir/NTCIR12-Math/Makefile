@@ -2,11 +2,11 @@
 
 RUN_SCRIPT=cd ../../.. && python3 -m
 
-OPT=NTCIR12-Math-queries-opt-participants.json NTCIR12-Math-queries-opt-participants.failures
-SLT=NTCIR12-Math-queries-slt-participants.json NTCIR12-Math-queries-slt-participants.failures
-PREFIX=NTCIR12-Math-queries-prefix-participants.json NTCIR12-Math-queries-prefix-participants.failures
-INFIX=NTCIR12-Math-queries-infix-participants.json NTCIR12-Math-queries-infix-participants.failures
-LATEX=NTCIR12-Math-queries-latex-participants.json NTCIR12-Math-queries-latex-participants.failures
+OPT=NTCIR12-Math-queries-opt-participants.json
+SLT=NTCIR12-Math-queries-slt-participants.json
+PREFIX=NTCIR12-Math-queries-prefix-participants.json
+INFIX=NTCIR12-Math-queries-infix-participants.json
+LATEX=NTCIR12-Math-queries-latex-participants.json
 
 all: $(OPT) $(SLT) $(PREFIX) $(INFIX) $(LATEX)
 
