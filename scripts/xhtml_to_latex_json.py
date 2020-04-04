@@ -7,7 +7,7 @@ import sys
 from lxml import etree
 from tqdm import tqdm
 
-from .common import Math, Text, ntcir_topic_read_xhtml as read_xhtml, unicode_to_tree, simple_preprocess
+from .common import Math, Text, ntcir_topic_read_xhtml as read_xhtml, unicode_to_tree, simple_preprocess, isolate_latex
 from .configuration import NTCIR11_MATH2_MAIN_TOPICS_XHTML_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FILENAME, NTCIR11_MATH2_MAIN_TOPICS_XHTML_NUM_TOPICS, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_NUM_TOPICS, XML_NAMESPACES, NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME, NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME, POOL_NUM_WORKERS, POOL_CHUNKSIZE, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_LATEX_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_LATEX_FAILURES_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_NUM_TOPICS
 
 
@@ -17,19 +17,16 @@ if sys.argv[1] == 'ntcir-11-math-2-main':
     TOPICS_XHTML_NUM_TOPICS = NTCIR11_MATH2_MAIN_TOPICS_XHTML_NUM_TOPICS
     TOPICS_JSON_LATEX_FILENAME = NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FILENAME
     TOPICS_JSON_LATEX_FAILURES_FILENAME = NTCIR11_MATH2_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME
-    NORMALIZE_MATH = True
 elif sys.argv[1] == 'ntcir-12-mathir-arxiv-main':
     TOPICS_XHTML_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_FILENAME
     TOPICS_XHTML_NUM_TOPICS = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_XHTML_NUM_TOPICS
     TOPICS_JSON_LATEX_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FILENAME
     TOPICS_JSON_LATEX_FAILURES_FILENAME = NTCIR12_MATHIR_ARXIV_MAIN_TOPICS_JSON_LATEX_FAILURES_FILENAME
-    NORMALIZE_MATH = True
 else:
     TOPICS_XHTML_FILENAME = NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_FILENAME
     TOPICS_XHTML_NUM_TOPICS = NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_XHTML_NUM_TOPICS
     TOPICS_JSON_LATEX_FILENAME = NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_LATEX_FILENAME
     TOPICS_JSON_LATEX_FAILURES_FILENAME = NTCIR12_MATHIR_MATHWIKIFORMULA_TOPICS_JSON_LATEX_FAILURES_FILENAME
-    NORMALIZE_MATH = False
 
 
 def count_xhtml():
@@ -44,7 +41,7 @@ def count_xhtml():
 
 
 def write_json():
-    topics = tqdm(read_xhtml(TOPICS_XHTML_FILENAME, NORMALIZE_MATH), total=count_xhtml(), desc='Converting')
+    topics = tqdm(read_xhtml(TOPICS_XHTML_FILENAME), total=count_xhtml(), desc='Converting')
     num_successful = 0
     num_total = 0
     with open(TOPICS_JSON_LATEX_FILENAME, 'wt') as f, open(TOPICS_JSON_LATEX_FAILURES_FILENAME, 'wt') as failures_f:
@@ -97,10 +94,7 @@ def write_json_worker(args):
             try:
                 mathml_tokens = input_token.math
                 math_element = unicode_to_tree(mathml_tokens)
-                annotation_elements = math_element.xpath('//annotation[@encoding = "application/x-tex"]', namespaces=XML_NAMESPACES)
-                assert len(annotation_elements) == 1
-                annotation_element = annotation_elements[0]
-                output_token = [str(Math(annotation_element.text))]
+                output_token = [str(Math(isolate_latex(math_element)))]
                 output_tokens.append(output_token)
             except Exception as e:
                 partial_failure.append(

@@ -43,13 +43,10 @@ def simple_preprocess(text):
     return gensim_simple_preprocess(text, max_len=float('inf'))
 
 
-def ntcir_topic_read_xhtml(filename, normalize_math):
+def ntcir_topic_read_xhtml(filename):
     with open(filename, 'rt') as f:
-        if normalize_math:
-            xml_tokens = mathmlcan(f.read())
-        else:
-            xml_tokens = f.read()
-        xml_document = unicode_to_tree(xml_tokens)
+        xhtml_tokens = f.read()
+        xml_document = unicode_to_tree(mathmlcan(xhtml_tokens))
     for topic_element in xml_document.xpath('//ntcir-math:topic | //mathml:topic', namespaces=XML_NAMESPACES):
         topic_number_elements = topic_element.xpath('.//ntcir-math:num | .//mathml:num', namespaces=XML_NAMESPACES)
         assert len(topic_number_elements) == 1
@@ -70,8 +67,9 @@ def ntcir_article_read_xhtml_worker(filename):
     formulae = []
     with open(filename, 'rt') as f:
         xhtml_tokens = f.read()
-        xml_document = unicode_to_tree(resolve_share_elements(xhtml_tokens))
+        xml_document = unicode_to_tree(mathmlcan(xhtml_tokens))
         for math_element in xml_document.xpath('//xhtml:math[@id]', namespaces=XML_NAMESPACES):
+            math_element = remove_namespaces(copy(math_element))
             formulae.append((math_element.attrib['id'], Math(tree_to_unicode(math_element))))
     return filename, formulae
 
@@ -119,6 +117,13 @@ def resolve_share_elements(xml_tokens):
             else:
                 share_element.decompose()
     return str(xml_document)
+
+
+def isolate_latex(tree):
+    annotation_elements = tree.xpath('//*[local-name() = "annotation" and @encoding = "application/x-tex"]')
+    assert len(annotation_elements) > 0, "<math> elements contains no annotation with LaTeX source code"
+    annotation_element = annotation_elements[0]
+    return annotation_element.text
 
 
 def remove_namespaces(tree):

@@ -1,4 +1,4 @@
-cmd: make formula_slt.V0.2.failures formula_slt.V0.2.tsv
+cmd: make formula_slt.V0.2.tsv
 outs:
 - path: formula_slt.V0.2.tsv
   persist: false
@@ -7,10 +7,10 @@ outs:
   cache: true
 - path: formula_slt.V0.2.failures
   persist: false
-  md5: ec7a9c7f1a242c489da18b06d0b6a68e
+  md5: 4e56b72e0d4856e50a6bbd829ad40bf5
   metric: false
   cache: true
 deps:
 - md5: 38ddfa8e934e93cd49ce37f3fa7a77b7
   path: formula_pmml.V0.2.tsv
-md5: 5d7c73681351debfc2fef1854fef450c
+md5: 6cd9dd2f1804c1d53af8ca77ae5df301

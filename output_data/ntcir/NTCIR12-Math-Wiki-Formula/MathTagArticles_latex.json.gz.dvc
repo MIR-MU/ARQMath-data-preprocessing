@@ -3,11 +3,11 @@ outs:
   metric: false
   path: MathTagArticles_latex.json.gz
   cache: true
-  md5: dc020f5f4ce07d90c78ce853881cd8ac
+  md5: a0ab10b39fb91a962954691056aa5547
 - persist: false
   metric: false
   path: MathTagArticles_latex.failures
   cache: true
-  md5: f2cd4f8426b95112b7099ed0886fcf30
-md5: a51371dae7adcc579d359e1d504027a2
+  md5: 7e8005641b89a5d4313ce78ee95d0e31
+md5: 11f4add2ff571d8d21d5234dc0e2491d
 cmd: make MathTagArticles_latex.json.gz

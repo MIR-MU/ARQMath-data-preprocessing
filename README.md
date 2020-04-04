@@ -28,7 +28,7 @@ $ dvc pull
 To produce the preprocessed datasets yourself,
 
 - install [LaTeXML version 0.8.4][latexml],
-- install [MathMLCan commit `3d66b66`][mathmlcan],
+- install [MathMLCan branch `arqmath`][mathmlcan],
 - install [xmllint version 20904 ][xmllint],
 - update paths for MathMLCan and for the input datasets in `scripts/configuration.py`,
 - run the following commands:
@@ -40,7 +40,7 @@ To produce the preprocessed datasets yourself,
  [arqmath]:         https://www.cs.rit.edu/~dprl/ARQMath/ (Answer Retrieval for Questions on Math)
  [arxmliv]:         https://sigmathling.kwarc.info/resources/arxmliv-dataset-082019/ (arXMLiv 08.2019 – An HTML5 dataset for arXiv.org)
  [latexml]:         https://dlmf.nist.gov/LaTeXML/ (LaTeXML: A LaTeX to XML/HTML/MathML Converter)
- [mathmlcan]:       https://github.com/MIR-MU/MathMLCan (MathMLCan – Canonicalization of different MathML encodings of equivalent formulae)
+ [mathmlcan]:       https://github.com/MIR-MU/MathMLCan/tree/arqmath (MathMLCan – Canonicalization of different MathML encodings of equivalent formulae)
  [ntcir-11-math-2]: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.686.444&rep=rep1&type=pdf (NTCIR-11 Math-2 Task Overview)
  [ntcir-12-mathir]: https://www.cs.rit.edu/~rlaz/files/ntcir12-mathir.pdf (NTCIR-12 MathIR Task Overview)
  [xmllint]:         http://xmlsoft.org/xmllint.html (xmllint — command line XML tool)

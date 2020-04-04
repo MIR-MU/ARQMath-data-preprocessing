@@ -10,7 +10,7 @@ from zipfile import ZipFile
 
 from tqdm import tqdm
 
-from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, unicode_to_tree, tree_to_unicode
+from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, unicode_to_tree, tree_to_unicode, isolate_latex
 from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_HTML5_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FILENAME, ARXMLIV_NOPROBLEM_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING1_HTML5_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FILENAME, ARXMLIV_WARNING1_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING1_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING2_HTML5_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FILENAME, ARXMLIV_WARNING2_JSON_LATEX_FAILURES_FILENAME, ARXMLIV_WARNING2_HTML5_NUM_DOCUMENTS
 
 
@@ -111,10 +111,7 @@ def write_json_worker(args):
                 try:
                     mathml_tokens = input_token.math
                     math_tree = unicode_to_tree(mathml_tokens)
-                    annotation_elements = math_tree.xpath('//annotation[@encoding = "application/x-tex"]')
-                    assert len(annotation_elements) > 0
-                    annotation_element = annotation_elements[0]
-                    output_token = str(Math(annotation_element.text))
+                    output_token = str(Math(isolate_latex(math_tree)))
                     output_paragraph.append(output_token)
                 except Exception as e:
                     partial_failure.append(

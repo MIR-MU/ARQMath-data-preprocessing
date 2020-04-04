@@ -1,5 +1,4 @@
-cmd: make formula_cmml.V0.2.failures formula_cmml.V0.2.tsv formula_pmml.V0.2.failures
-  formula_pmml.V0.2.tsv
+cmd: make formula_cmml.V0.2.tsv formula_pmml.V0.2.tsv
 outs:
 - path: formula_cmml.V0.2.failures
   persist: false
@@ -21,4 +20,4 @@ outs:
   md5: 38ddfa8e934e93cd49ce37f3fa7a77b7
   metric: false
   cache: true
-md5: f40887921965b5d9011c0314124a218d
+md5: d5b5257b632fa95c4d04f15a188775bd

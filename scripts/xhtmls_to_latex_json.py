@@ -9,7 +9,7 @@ from multiprocessing import Pool
 from tqdm import tqdm
 import sys
 
-from .common import ntcir_article_read_xhtml_worker as read_xhtml_worker, Math, unicode_to_tree
+from .common import ntcir_article_read_xhtml_worker as read_xhtml_worker, Math, unicode_to_tree, isolate_latex
 from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, NTCIR12_MATHIR_MATHWIKIFORMULA_DATA_XHTML_GLOB, NTCIR12_MATHIR_MATHWIKIFORMULA_DATA_JSON_LATEX_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_DATA_JSON_LATEX_FAILURES_FILENAME, NTCIR12_MATHIR_MATHWIKIFORMULA_DATA_XHTML_NUM_DOCUMENTS, XML_NAMESPACES
 
 
@@ -82,10 +82,7 @@ def write_json_worker(args):
             if 'class' in math_tree.attrib and math_tree.attrib['class'] == 'LaTeXML::Error':
                 output_tokens = math_tree.text
             else:
-                annotation_elements = math_tree.xpath('//xhtml:annotation[@encoding = "application/x-tex"]', namespaces=XML_NAMESPACES)
-                assert len(annotation_elements) > 0
-                annotation_element = annotation_elements[0]
-                output_tokens = annotation_element.text
+                output_tokens = isolate_latex(math_tree)
             output_formula = [str(Math(output_tokens))]
             output_formulae.append((output_formula_id, output_formula))
         except Exception as e:

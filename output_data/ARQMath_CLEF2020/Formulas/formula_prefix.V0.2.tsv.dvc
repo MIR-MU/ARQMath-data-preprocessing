@@ -1,16 +1,16 @@
-md5: 5caa6c846ee44c6b83ce331ba01e6b8c
+md5: 5fc2b3cb8d402bec6d9e46980700b22f
 outs:
 - metric: false
-  md5: 53cf4d9efb2b5a811c1ba49e36ef0bd1
+  md5: 682d48568935d348415a835ee47df305
   cache: true
   persist: false
   path: formula_prefix.V0.2.tsv
 - metric: false
-  md5: d80c23aafd3263817ec6b6f1e6ca5036
+  md5: d41d8cd98f00b204e9800998ecf8427e
   cache: true
   persist: false
   path: formula_prefix.V0.2.failures
 deps:
 - md5: d30342f1fa64db69dc148f9a338e8f95
   path: formula_cmml.V0.2.tsv
-cmd: make formula_prefix.V0.2.failures formula_prefix.V0.2.tsv
+cmd: make formula_prefix.V0.2.tsv
