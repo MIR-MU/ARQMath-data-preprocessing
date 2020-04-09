@@ -1,0 +1,8 @@
+outs:
+- path: arxmliv_prefix_08_2019_no_problem.json.gz
+  persist: false
+  cache: true
+  metric: false
+  md5: 66f57ae75ccff7a0bfca6e9c9ad31276
+md5: da79c09009ab14bd20ec771a14a3f148
+cmd: make arxmliv_prefix_08_2019_no_problem.json.gz

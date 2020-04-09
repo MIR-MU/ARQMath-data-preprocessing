@@ -1,0 +1,8 @@
+outs:
+- path: arxmliv_slt_08_2019_no_problem.json.gz
+  persist: false
+  cache: true
+  metric: false
+  md5: d4ef949682cf2b2015454fa0968341c8
+md5: 04fac572c68f9c69c8aba50099cdb47d
+cmd: make arxmliv_slt_08_2019_no_problem.json.gz

@@ -1,0 +1,8 @@
+outs:
+- path: arxmliv_latex_08_2019_no_problem.json.gz
+  persist: false
+  cache: true
+  metric: false
+  md5: 2047d854935ca26c67c3a97804acf72a
+md5: 954657467fd7ce4679851efa67ebe815
+cmd: make arxmliv_latex_08_2019_no_problem.json.gz

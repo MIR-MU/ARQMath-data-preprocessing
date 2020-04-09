@@ -1,0 +1,8 @@
+outs:
+- path: arxmliv_infix_08_2019_no_problem.json.gz
+  persist: false
+  cache: true
+  metric: false
+  md5: f5eb6d5a132bf7d026bec38e8cd380ec
+md5: 6f86038e7acb10f8dc3aa4a37b550a8c
+cmd: make arxmliv_infix_08_2019_no_problem.json.gz

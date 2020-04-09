@@ -1,7 +1,7 @@
 beautifulsoup4~=4.8.2
 dvc~=0.92.0
 gensim~=3.8.1
-git+https://github.com/MIR-MU/TangentCFT.git@daaa47f
+git+https://github.com/MIR-MU/TangentCFT.git@4b746f1
 lxml~=4.5.0
 n2w~=0.1.3
 tqdm~=4.45.0

@@ -8,11 +8,12 @@ import os.path
 import sys
 from zipfile import ZipFile
 
+from lxml import etree
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 from tqdm import tqdm
 
-from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, slt_tokenize as tokenize
-from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_HTML5_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_SLT_FILENAME, ARXMLIV_NOPROBLEM_JSON_SLT_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING1_HTML5_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_SLT_FILENAME, ARXMLIV_WARNING1_JSON_SLT_FAILURES_FILENAME, ARXMLIV_WARNING1_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING2_HTML5_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_SLT_FILENAME, ARXMLIV_WARNING2_JSON_SLT_FAILURES_FILENAME, ARXMLIV_WARNING2_HTML5_NUM_DOCUMENTS
+from .common import ntcir_article_read_html5_worker as read_html5_worker, Text, Math, slt_tokenize as tokenize, unicode_to_tree, tree_to_unicode
+from .configuration import POOL_NUM_WORKERS, POOL_CHUNKSIZE, ARXMLIV_NOPROBLEM_HTML5_ZIP_FILENAME, ARXMLIV_NOPROBLEM_JSON_SLT_FILENAME, ARXMLIV_NOPROBLEM_JSON_SLT_FAILURES_FILENAME, ARXMLIV_NOPROBLEM_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING1_HTML5_ZIP_FILENAME, ARXMLIV_WARNING1_JSON_SLT_FILENAME, ARXMLIV_WARNING1_JSON_SLT_FAILURES_FILENAME, ARXMLIV_WARNING1_HTML5_NUM_DOCUMENTS, ARXMLIV_WARNING2_HTML5_ZIP_FILENAME, ARXMLIV_WARNING2_JSON_SLT_FILENAME, ARXMLIV_WARNING2_JSON_SLT_FAILURES_FILENAME, ARXMLIV_WARNING2_HTML5_NUM_DOCUMENTS, XML_NAMESPACES
 
 
 assert sys.argv[1] in ('no_problem', 'warning_1', 'warning_2')
@@ -111,6 +112,9 @@ def write_json_worker(args):
                 input_math_token_number += 1
                 try:
                     math_element = MathExtractor.isolate_pmml(input_token.math)
+                    math_tree = unicode_to_tree(math_element)
+                    etree.strip_elements(math_tree, '{{{}}}annotation'.format(XML_NAMESPACES['mathml']), with_tail=False)
+                    math_element = tree_to_unicode(math_tree)
                     output_tokens = [
                         str(Math(token))
                         for token in tokenize(math_element)
