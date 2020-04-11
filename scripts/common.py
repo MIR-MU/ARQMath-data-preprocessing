@@ -110,6 +110,9 @@ def resolve_share_elements(xml_tokens):
     xml_document = BeautifulSoup(xml_tokens, 'lxml')
     for math_element in xml_document.find_all('math'):
         for share_element in math_element.find_all('share'):
+            if 'href' not in share_element:
+                share_element.decompose()
+                continue
             assert share_element['href'].startswith('#')
             shared_element = math_element.find(id=share_element['href'][1:])
             if shared_element:
@@ -192,11 +195,12 @@ def html5_to_xhtml(html5_input):
 
 
 def cmml_and_pmml_read_tsv_worker(row):
-    document = BeautifulSoup(row[-1], 'lxml')
-    math_elements = document.find_all('math')
-    if len(math_elements) >= 1:
+    document = unicode_to_tree(resolve_share_elements(row[-1]))
+    math_elements = document.xpath('//mathml:math', namespaces=XML_NAMESPACES)
+    if len(math_elements) > 0:
         math_element = math_elements[0]
-        math_tokens = str(math_element)
+        etree.strip_tags(math_element, '{{{}}}semantics'.format(XML_NAMESPACES['mathml']))
+        math_tokens = tree_to_unicode(math_element)
     else:
         math_tokens = ''
     return row[:-1] + [math_tokens]

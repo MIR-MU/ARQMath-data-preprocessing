@@ -2,15 +2,15 @@ cmd: make formula_slt.V0.2.tsv
 outs:
 - path: formula_slt.V0.2.tsv
   persist: false
-  md5: 73059cc53e26f76501367aac3ed0bf0d
+  md5: 6e50160fcca2acdcac9f641043d475c8
   metric: false
   cache: true
 - path: formula_slt.V0.2.failures
   persist: false
-  md5: 4e56b72e0d4856e50a6bbd829ad40bf5
+  md5: 18044e28d4c8c0f555d670c5a75cdf43
   metric: false
   cache: true
 deps:
 - md5: 38ddfa8e934e93cd49ce37f3fa7a77b7
   path: formula_pmml.V0.2.tsv
-md5: 6cd9dd2f1804c1d53af8ca77ae5df301
+md5: 514c544bf52ffd7777eadf2438e332ac

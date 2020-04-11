@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all sanity-check
 
 RUN_SCRIPT=cd ../../.. && python3 -m
 
@@ -8,6 +8,14 @@ OPT=formula_opt.V0.2.tsv
 SLT=formula_slt.V0.2.tsv
 PREFIX=formula_prefix.V0.2.tsv
 INFIX=formula_infix.V0.2.tsv
+
+sanity-check:
+	grep -P '^14047452\t' $(CMML)   | grep -q '<cn [^>]*>3'
+	grep -P '^14047452\t' $(PMML)   | grep -q '<mn [^>]*>3'
+	grep -P '^14047452\t' $(OPT)    | grep -q 'N!3'
+	grep -P '^14047452\t' $(SLT)    | grep -q 'N!3'
+	grep -P '^14047452\t' $(PREFIX) | grep -q 'N!3'
+	grep -P '^14047452\t' $(INFIX)  | grep -q 'N!3'
 
 all: $(CMML) $(PMML) $(OPT) $(SLT) $(PREFIX) $(INFIX)
 

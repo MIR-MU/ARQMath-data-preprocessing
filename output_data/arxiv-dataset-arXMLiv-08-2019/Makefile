@@ -14,10 +14,10 @@ WARNING1_PREFIX=arxmliv_prefix_08_2019_warning_1.json.gz
 WARNING1_INFIX=arxmliv_infix_08_2019_warning_1.json.gz
 WARNING1_LATEX=arxmliv_latex_08_2019_warning_1.json.gz
 
-WARNING1_OPT=arxmliv_opt_08_2019_warning_2.json.gz
-WARNING1_SLT=arxmliv_slt_08_2019_warning_2.json.gz
-WARNING1_PREFIX=arxmliv_prefix_08_2019_warning_2.json.gz
-WARNING1_INFIX=arxmliv_infix_08_2019_warning_2.json.gz
+WARNING2_OPT=arxmliv_opt_08_2019_warning_2.json.gz
+WARNING2_SLT=arxmliv_slt_08_2019_warning_2.json.gz
+WARNING2_PREFIX=arxmliv_prefix_08_2019_warning_2.json.gz
+WARNING2_INFIX=arxmliv_infix_08_2019_warning_2.json.gz
 WARNING2_LATEX=arxmliv_latex_08_2019_warning_2.json.gz
 
 OPT=$(NOPROBLEM_OPT) $(WARNING1_OPT) $(WARNING2_OPT)
