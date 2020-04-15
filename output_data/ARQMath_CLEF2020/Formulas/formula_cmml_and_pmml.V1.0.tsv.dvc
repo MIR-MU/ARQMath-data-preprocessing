@@ -1,0 +1,23 @@
+cmd: make formula_cmml.V1.0.tsv
+outs:
+- path: formula_cmml.V1.0.failures
+  persist: false
+  md5: ab7c8c9c63907b756a8f57b04871eca2
+  metric: false
+  cache: true
+- path: formula_cmml.V1.0.tsv
+  persist: false
+  md5: 135c4d2823d77c116fbef534c23b58a7
+  metric: false
+  cache: true
+- path: formula_pmml.V1.0.failures
+  persist: false
+  md5: ef801e5c752089106d708f920399c30c
+  metric: false
+  cache: true
+- path: formula_pmml.V1.0.tsv
+  persist: false
+  md5: 3bc08f8609ffaa6aa0cfc672ab2cb6ae
+  metric: false
+  cache: true
+md5: 3849e5af3c1dcb26eacbe83122a7f4d7

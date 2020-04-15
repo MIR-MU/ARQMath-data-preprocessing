@@ -3,24 +3,26 @@
 
 import csv
 from itertools import islice
+from io import TextIOWrapper
 from os.path import join
 from multiprocessing import Pool
 import re
 import subprocess
 import sys
+from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from lxml import etree
 from tqdm import tqdm
 from tangentcft.TangentS.math_tan.math_extractor import MathExtractor
 
-from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, ARQMATH_TRAIN_TSV_LATEX_FILENAME, POOL_CHUNKSIZE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_LATEX_NUM_FORMULAE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS, ARQMATH_TASK1_TEST_TSV_LATEX_FILENAME, ARQMATH_TASK1_TEST_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK1_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_TEST_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK1_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_TEST_TSV_LATEX_NUM_FORMULAE, ARQMATH_TASK1_VALIDATION_TSV_LATEX_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_LATEX_NUM_FORMULAE, ARQMATH_TASK1_VALIDATION_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_LATEX_FILENAME, ARQMATH_TASK2_TEST_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK2_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK2_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_LATEX_NUM_FORMULAE
+from .configuration import CSV_PARAMETERS, LATEXMLC_BATCH_SIZE, LATEXMLC, ARQMATH_TRAIN_TSV_LATEX_ZIP_FILENAME, POOL_CHUNKSIZE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TRAIN_TSV_LATEX_NUM_FORMULAE, ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TRAIN_TSV_PMML_OUTPUT_FAILURES_FILENAME, XML_NAMESPACES, POOL_NUM_WORKERS, ARQMATH_TASK1_TEST_TSV_LATEX_FILENAME, ARQMATH_TASK1_TEST_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK1_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_TEST_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK1_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_TEST_TSV_LATEX_NUM_FORMULAE, ARQMATH_TASK1_VALIDATION_TSV_LATEX_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_LATEX_NUM_FORMULAE, ARQMATH_TASK1_VALIDATION_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK1_VALIDATION_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_LATEX_FILENAME, ARQMATH_TASK2_TEST_TSV_CMML_OUTPUT_FILENAME, ARQMATH_TASK2_TEST_TSV_CMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_PMML_OUTPUT_FILENAME, ARQMATH_TASK2_TEST_TSV_PMML_OUTPUT_FAILURES_FILENAME, ARQMATH_TASK2_TEST_TSV_LATEX_NUM_FORMULAE
 from .common import tree_to_unicode, unicode_to_tree, latexml, mathmlcan
 
 
 assert sys.argv[1] in ('train', 'task1-validation', 'task1-test', 'task2-test')
 if sys.argv[1] == 'train':
-    ARQMATH_TSV_LATEX_FILENAME = ARQMATH_TRAIN_TSV_LATEX_FILENAME
+    ARQMATH_TSV_LATEX_FILENAME = ARQMATH_TRAIN_TSV_LATEX_ZIP_FILENAME
     ARQMATH_TSV_LATEX_NUM_FORMULAE = ARQMATH_TRAIN_TSV_LATEX_NUM_FORMULAE
     ARQMATH_TSV_CMML_OUTPUT_FILENAME = ARQMATH_TRAIN_TSV_CMML_OUTPUT_FILENAME
     ARQMATH_TSV_CMML_OUTPUT_FAILURES_FILENAME = ARQMATH_TRAIN_TSV_CMML_OUTPUT_FAILURES_FILENAME
@@ -55,9 +57,18 @@ def get_batches(iterable, batch_size=LATEXMLC_BATCH_SIZE):
 
 
 def count_tsv():
-    with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
-        rows = csv.reader(f, **CSV_PARAMETERS)
-        num_rows = sum(1 for _ in tqdm(rows, desc='Counting formulae')) - 1
+    if ARQMATH_TSV_LATEX_FILENAME.endswith('.zip'):
+        with ZipFile(ARQMATH_TSV_LATEX_FILENAME, 'r') as zf:
+            num_rows = 0
+            for filename in tqdm(zf.namelist(), desc='Counting formulae'):
+                if filename.endswith('.tsv'):
+                    with zf.open(filename, 'r') as f:
+                        rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
+                        num_rows += sum(1 for _ in rows) - 1
+    else:
+        with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
+            rows = csv.reader(f, **CSV_PARAMETERS)
+            num_rows = sum(1 for _ in tqdm(rows, desc='Counting formulae')) - 1
     assert num_rows == ARQMATH_TSV_LATEX_NUM_FORMULAE, '{} contains {} formulae instead of the expected {}'.format(
         ARQMATH_TSV_LATEX_FILENAME,
         num_rows,
@@ -67,12 +78,28 @@ def count_tsv():
 
 
 def read_tsv():
-    with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
-        latex_rows = csv.reader(f, **CSV_PARAMETERS)
-        yield next(latex_rows)
-        for latex_row in latex_rows:
-            math_tokens = re.sub(r'([^\\])%', r'\1', latex_row[-1])
-            yield latex_row[:-1] + [math_tokens]
+    if ARQMATH_TSV_LATEX_FILENAME.endswith('.zip'):
+        with ZipFile(ARQMATH_TSV_LATEX_FILENAME, 'r') as zf:
+            first_file = True
+            for filename in zf.namelist():
+                if filename.endswith('.tsv'):
+                    with zf.open(filename, 'r') as f:
+                        latex_rows = csv.reader(TextIOWrapper(f), **CSV_PARAMETERS)
+                        if first_file:
+                            yield next(latex_rows)
+                            first_file = False
+                        else:
+                            next(latex_rows)
+                        for latex_row in latex_rows:
+                            math_tokens = re.sub(r'([^\\])%', r'\1', latex_row[-1])
+                            yield latex_row[:-1] + [math_tokens]
+    else:
+        with open(ARQMATH_TSV_LATEX_FILENAME, 'rt') as f:
+            latex_rows = csv.reader(f, **CSV_PARAMETERS)
+            yield next(latex_rows)
+            for latex_row in latex_rows:
+                math_tokens = re.sub(r'([^\\])%', r'\1', latex_row[-1])
+                yield latex_row[:-1] + [math_tokens]
 
 
 def write_tsv():

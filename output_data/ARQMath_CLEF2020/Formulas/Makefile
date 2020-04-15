@@ -2,22 +2,22 @@
 
 RUN_SCRIPT=cd ../../.. && python3 -m
 
-CMML=formula_cmml.V0.2.tsv
-PMML=formula_pmml.V0.2.tsv
-OPT=formula_opt.V0.2.tsv
-SLT=formula_slt.V0.2.tsv
-PREFIX=formula_prefix.V0.2.tsv
-INFIX=formula_infix.V0.2.tsv
-
-sanity-check:
-	grep -P '^14047452\t' $(CMML)   | grep -q '<cn [^>]*>3'
-	grep -P '^14047452\t' $(PMML)   | grep -q '<mn [^>]*>3'
-	grep -P '^14047452\t' $(OPT)    | grep -q 'N!3'
-	grep -P '^14047452\t' $(SLT)    | grep -q 'N!3'
-	grep -P '^14047452\t' $(PREFIX) | grep -q 'N!3'
-	grep -P '^14047452\t' $(INFIX)  | grep -q 'N!3'
+CMML=formula_cmml.V1.0.tsv
+PMML=formula_pmml.V1.0.tsv
+OPT=formula_opt.V1.0.tsv
+SLT=formula_slt.V1.0.tsv
+PREFIX=formula_prefix.V1.0.tsv
+INFIX=formula_infix.V1.0.tsv
 
 all: $(CMML) $(PMML) $(OPT) $(SLT) $(PREFIX) $(INFIX)
+
+sanity-check:
+	grep -P -A 1 '^14047452\t' $(CMML)   | grep -q '<ci [^>]*>S<\/ci>'
+	grep -P -A 1 '^14047452\t' $(PMML)   | grep -q '<mi [^>]*>S<\/mi>'
+	grep -P      '^14047452\t' $(OPT)    | grep -q 'V!S'
+	grep -P      '^14047452\t' $(SLT)    | grep -q 'V!S'
+	grep -P      '^14047452\t' $(PREFIX) | grep -q 'V!S'
+	grep -P      '^14047452\t' $(INFIX)  | grep -q 'V!S'
 
 $(CMML) $(PMML):
 	$(RUN_SCRIPT) scripts.latex_tsv_to_cmml_and_pmml_tsv train

@@ -1,0 +1,16 @@
+md5: 68e173c2daf5eb69d70e37ff72c4e4be
+outs:
+- metric: false
+  md5: 41dd59f2f8a650df2336c0943ab4b019
+  cache: true
+  persist: false
+  path: formula_infix.V1.0.tsv
+- metric: false
+  md5: 345d08809e898f6e6fb73225a1f19ef3
+  cache: true
+  persist: false
+  path: formula_infix.V1.0.failures
+deps:
+- md5: 135c4d2823d77c116fbef534c23b58a7
+  path: formula_cmml.V1.0.tsv
+cmd: make formula_infix.V1.0.tsv

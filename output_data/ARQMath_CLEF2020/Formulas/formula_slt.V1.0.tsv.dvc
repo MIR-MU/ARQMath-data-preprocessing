@@ -1,0 +1,16 @@
+cmd: make formula_slt.V1.0.tsv
+outs:
+- path: formula_slt.V1.0.tsv
+  persist: false
+  md5: 3a736fa072c145e5e1e3ad0fca5e3e46
+  metric: false
+  cache: true
+- path: formula_slt.V1.0.failures
+  persist: false
+  md5: 3f0d9f0188725ae1d82d9ce17f75ccbd
+  metric: false
+  cache: true
+deps:
+- md5: 3bc08f8609ffaa6aa0cfc672ab2cb6ae
+  path: formula_pmml.V1.0.tsv
+md5: 491468e61cac6d1c8fb0ead6f0eed493

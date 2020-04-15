@@ -1,0 +1,16 @@
+outs:
+- path: formula_opt.V1.0.tsv
+  cache: true
+  md5: 2bddafc16a9da725dd995910e8f937cc
+  metric: false
+  persist: false
+- path: formula_opt.V1.0.failures
+  cache: true
+  md5: 345d08809e898f6e6fb73225a1f19ef3
+  metric: false
+  persist: false
+deps:
+- md5: 135c4d2823d77c116fbef534c23b58a7
+  path: formula_cmml.V1.0.tsv
+md5: 4ffc01bec7f9d700c354d47da9f46e40
+cmd: make formula_opt.V1.0.tsv
