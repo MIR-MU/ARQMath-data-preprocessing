@@ -76,34 +76,37 @@ def ntcir_article_read_xhtml_worker(filename):
 
 def ntcir_article_read_html5_worker(args):
     zip_filename, filename, only_latex = args
-    with ZipFile(zip_filename, 'r') as zf:
-        with zf.open(filename, 'r') as f:
-            if only_latex:
-                html5_parser = etree.HTMLParser(huge_tree=True)
-                xml_document = etree.parse(f, html5_parser)
-            else:
-                html5_tokens = f.read().decode('utf-8')
-                xml_tokens = mathmlcan(html5_to_xhtml(html5_tokens))
-                xml_document = unicode_to_tree(xml_tokens)
-            math_tokens = {}
-            for math_element_number, math_element in enumerate(xml_document.xpath('//math')):
-                math_element_token = 'math_element_{}___'.format(
-                    re.sub(r'\s+', '_', n2w.convert(math_element_number))
-                )
-                replacement = etree.Element("span")
-                replacement.text = math_element_token
-                if math_element.tail:
-                    replacement.text += ' ' + math_element.tail
-                math_element.getparent().replace(math_element, replacement)
-                math_tokens[math_element_token] = Math(tree_to_unicode(math_element))
-            document = [
-                [
-                    math_tokens[token] if token in math_tokens else Text(token)
-                    for token in simple_preprocess(' '.join(paragraph.itertext()))
-                ]
-                for paragraph in xml_document.xpath('//div[contains(@class, "ltx_para")]')
+    try:
+        with ZipFile(zip_filename, 'r') as zf:
+            with zf.open(filename, 'r') as f:
+                if only_latex:
+                    html5_parser = etree.HTMLParser(huge_tree=True)
+                    xml_document = etree.parse(f, html5_parser)
+                else:
+                    html5_tokens = f.read().decode('utf-8')
+                    xml_tokens = mathmlcan(html5_to_xhtml(html5_tokens))
+                    xml_document = unicode_to_tree(xml_tokens)
+        math_tokens = {}
+        for math_element_number, math_element in enumerate(xml_document.xpath('//math')):
+            math_element_token = 'math_element_{}___'.format(
+                re.sub(r'\s+', '_', n2w.convert(math_element_number))
+            )
+            replacement = etree.Element("span")
+            replacement.text = math_element_token
+            if math_element.tail:
+                replacement.text += ' ' + math_element.tail
+            math_element.getparent().replace(math_element, replacement)
+            math_tokens[math_element_token] = Math(tree_to_unicode(math_element))
+        document = [
+            [
+                math_tokens[token] if token in math_tokens else Text(token)
+                for token in simple_preprocess(' '.join(paragraph.itertext()))
             ]
-        return (zip_filename, filename, document)
+            for paragraph in xml_document.xpath('//div[contains(@class, "ltx_para")]')
+        ]
+    except etree.Error as e:
+        document = []
+    return (zip_filename, filename, document)
 
 
 def resolve_share_elements(xml_tokens):
@@ -146,52 +149,37 @@ def tree_to_unicode(tree):
 
 
 def latexml(latex_input):
-    latex_input = latex_input.encode('utf-8')
-    xml_output = subprocess.Popen(
-        LATEXMLC,
-        shell=False,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-    ).communicate(
-        latex_input,
-        timeout=SUBPROCESS_TIMEOUT,
-    )[0]
-    xml_output = xml_output.decode('utf-8')
-    return xml_output
+    return execute(LATEXMLC, latex_input)
 
 
 def mathmlcan(xml_input):
     xml_input = resolve_share_elements(xml_input)
-    xml_input = xml_input.encode('utf-8')
-    xml_output = subprocess.Popen(
-        MATHMLCAN,
-        shell=False,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-    ).communicate(
-        xml_input,
-        timeout=SUBPROCESS_TIMEOUT,
-    )[0]
-    xml_output = xml_output.decode('utf-8')
-    return xml_output
+    return execute(MATHMLCAN, xml_input)
 
 
 def html5_to_xhtml(html5_input):
-    html5_input = html5_input.encode('utf-8')
-    xml_output = subprocess.Popen(
-        XMLLINT,
+    return execute(XMLLINT, html5_input)
+
+
+def execute(command, unicode_input):
+    str_input = unicode_input.encode('utf-8')
+    process = subprocess.Popen(
+        command,
         shell=False,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
-    ).communicate(
-        html5_input,
-        timeout=SUBPROCESS_TIMEOUT,
-    )[0]
-    xml_output = xml_output.decode('utf-8')
-    return xml_output
+    )
+    try:
+        str_output = process.communicate(
+            str_input,
+            timeout=SUBPROCESS_TIMEOUT,
+        )[0]
+    except TimeoutExpired as e:
+        process.kill()
+        raise e
+    unicode_output = str_output.decode('utf-8')
+    return unicode_output
 
 
 def cmml_and_pmml_read_tsv_worker(row):

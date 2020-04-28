@@ -97,6 +97,8 @@ def write_json_worker(args):
     zip_filename, filename, input_paragraphs = args
     output_paragraphs = []
     partial_failure = []
+    if not input_paragraphs:
+        partial_failure.append('Either the input document is empty, or it failed to parse')
     for input_paragraph_number, input_paragraph in enumerate(input_paragraphs):
         input_paragraph_number += 1
         output_paragraph = []
