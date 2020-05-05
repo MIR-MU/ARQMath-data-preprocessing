@@ -67,7 +67,7 @@ def write_json():
                 num_total += 1
                 if partial_failure:
                     print(
-                        'Processing HTML5 document {}/{} partially failed: \n{}'.format(
+                        'Processing HTML5 document {}/{} partially failed:\n{}'.format(
                             zip_filename,
                             filename,
                             partial_failure,
@@ -100,7 +100,7 @@ def write_json_worker(args):
     output_paragraphs = []
     partial_failure = []
     if not input_paragraphs:
-        partial_failure.append('Either the input document is empty, or it failed to parse')
+        partial_failure.append('- Either the input document is empty, or it failed to parse')
     for input_paragraph_number, input_paragraph in enumerate(input_paragraphs):
         input_paragraph_number += 1
         output_paragraph = []

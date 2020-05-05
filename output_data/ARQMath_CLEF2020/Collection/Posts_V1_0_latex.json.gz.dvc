@@ -1,0 +1,8 @@
+outs:
+- persist: false
+  md5: 9e4726636426162683fd5cb2b0a0dcd2
+  cache: true
+  path: Posts_V1_0_latex.json.gz
+  metric: false
+md5: 46789bf4fdbf10233d9a4735f940e56a
+cmd: make Posts_V1_0_latex.json.gz

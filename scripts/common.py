@@ -74,6 +74,32 @@ def ntcir_article_read_xhtml_worker(filename):
     return filename, formulae
 
 
+def arqmath_post_read_html5_worker(args):
+    post_id, html5_tokens = args
+    xml_document = html5_unicode_to_tree(html5_tokens)
+    math_tokens = {}
+    for math_element_number, math_element in enumerate(xml_document.xpath('//span[@class="math-container"]')):
+        math_element_token = 'math_element_{}___'.format(
+            re.sub(r'\s+', '_', n2w.convert(math_element_number))
+        )
+        replacement = etree.Element("span")
+        replacement.text = math_element_token
+        if math_element.tail:
+            replacement.text += ' ' + math_element.tail
+        math_element.getparent().replace(math_element, replacement)
+        if 'id' in math_element.attrib:
+            math_element_id = int(math_element.attrib['id'])
+        else:
+            math_element_id = None
+        math_element_text = re.sub(r'^(\$*)(.*)\1', r'\2', math_element.text or '')
+        math_tokens[math_element_token] = (math_element_id, Math(math_element_text))
+    document = [
+        math_tokens[token] if token in math_tokens else Text(token)
+        for token in simple_preprocess(' '.join(xml_document.itertext()))
+    ]
+    return (post_id, document)
+
+
 def ntcir_article_read_html5_worker(args):
     zip_filename, filename, only_latex = args
     try:
@@ -142,6 +168,11 @@ def remove_namespaces(tree):
 def unicode_to_tree(text):
     xml_parser = etree.XMLParser(huge_tree=True)
     return etree.XML(text.encode(ETREE_TOSTRING_PARAMETERS['encoding']), xml_parser)
+
+
+def html5_unicode_to_tree(text):
+    html5_parser = etree.HTMLParser(huge_tree=True)
+    return etree.XML(text.encode(ETREE_TOSTRING_PARAMETERS['encoding']), html5_parser)
 
 
 def tree_to_unicode(tree):

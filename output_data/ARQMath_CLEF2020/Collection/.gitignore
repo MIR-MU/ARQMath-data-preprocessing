@@ -1,1 +1,6 @@
 /votes-qrels.V1.0.tsv
+/Posts_V1_0_infix.json.gz
+/Posts_V1_0_latex.json.gz
+/Posts_V1_0_opt.json.gz
+/Posts_V1_0_prefix.json.gz
+/Posts_V1_0_slt.json.gz

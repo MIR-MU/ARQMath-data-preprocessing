@@ -52,7 +52,7 @@ def write_json():
                 num_total += 1
                 if partial_failure:
                     print(
-                        'Processing XHTML topic {} partially failed: \n{}'.format(
+                        'Processing XHTML topic {} partially failed:\n{}'.format(
                             topic_number,
                             partial_failure,
                         ),

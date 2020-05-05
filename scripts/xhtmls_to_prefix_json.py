@@ -45,7 +45,7 @@ def write_json():
                 num_total += 1
                 if partial_failure:
                     print(
-                        'Processing XHTML document {} partially failed: \n{}'.format(
+                        'Processing XHTML document {} partially failed:\n{}'.format(
                             filename,
                             partial_failure,
                         ),

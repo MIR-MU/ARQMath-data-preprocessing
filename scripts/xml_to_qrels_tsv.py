@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 # -*- coding:utf-8 -*-
-
-from .common import ARQMATH_COLLECTION_INPUT_DATA_DIRNAME, ARQMATH_COLLECTION_QRELS_FILENAME
 
 from arqmathcode.post_reader_record import DataReaderRecord
 from tqdm import tqdm
+
+from .common import ARQMATH_COLLECTION_INPUT_DATA_DIRNAME, ARQMATH_COLLECTION_QRELS_FILENAME
 
 
 if __name__ == '__main__':
