@@ -1,0 +1,8 @@
+outs:
+- cache: true
+  metric: false
+  persist: false
+  path: votes-qrels.V1.2.tsv
+  md5: 08f2f235e037381a9fbf5c866ee6f4c4
+md5: d1a18f435ab0da4445bea42771b9b8e9
+cmd: make votes-qrels.V1.2.tsv

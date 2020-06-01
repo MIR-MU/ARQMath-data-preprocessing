@@ -1,14 +1,17 @@
 # -*- coding:utf-8 -*-
 
+import csv
+
 from arqmathcode.post_reader_record import DataReaderRecord
 from tqdm import tqdm
 
-from .common import ARQMATH_COLLECTION_INPUT_DATA_DIRNAME, ARQMATH_COLLECTION_QRELS_FILENAME
+from .configuration import CSV_PARAMETERS, ARQMATH_COLLECTION_INPUT_DATA_DIRNAME, ARQMATH_COLLECTION_QRELS_FILENAME
 
 
 if __name__ == '__main__':
     xml_reader = DataReaderRecord(ARQMATH_COLLECTION_INPUT_DATA_DIRNAME)
     with open(ARQMATH_COLLECTION_QRELS_FILENAME, 'wt') as f:
+        csv_writer = csv.writer(f, **CSV_PARAMETERS)
         questions = tqdm(
             sorted(
                 xml_reader.post_parser.map_questions.values(),
@@ -21,4 +24,5 @@ if __name__ == '__main__':
                 positive_votes = sum(1 for vote in (answer.votes or []) if vote.vote_type_id == 2)
                 negative_votes = sum(1 for vote in (answer.votes or []) if vote.vote_type_id == 3)
                 judgement = max(0, positive_votes - negative_votes)
-                print('{}\txxx\t{}\t{}'.format(question.post_id, answer.post_id, judgement), file=f)
+                row = (question.post_id, 'xxx', answer.post_id, judgement)
+                csv_writer.writerow(row)

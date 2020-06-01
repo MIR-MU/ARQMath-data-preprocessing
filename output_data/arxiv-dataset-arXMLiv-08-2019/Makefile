@@ -21,8 +21,8 @@ WARNING2_INFIX=arxmliv_infix_08_2019_warning_2.json.gz
 WARNING2_LATEX=arxmliv_latex_08_2019_warning_2.json.gz
 
 NOPROBLEM=$(NOPROBLEM_OPT) $(NOPROBLEM_SLT) $(NOPROBLEM_PREFIX) $(NOPROBLEM_INFIX) $(NOPROBLEM_LATEX)
-WARNING1=$(WARNING1_OPT) $(WARNING1_SLT) $(WARNING1_PREFIX) $(WARNING1_INFIX) $(WARNING1_LATEX)
-WARNING2=$(WARNING2_OPT) $(WARNING2_SLT) $(WARNING2_PREFIX) $(WARNING2_INFIX) $(WARNING2_LATEX)
+WARNING1=$(WARNING1_PREFIX)
+WARNING2=$(WARNING2_PREFIX)
 
 all: $(NOPROBLEM) $(WARNING1) $(WARNING2)
 
@@ -41,32 +41,8 @@ $(NOPROBLEM_INFIX):
 $(NOPROBLEM_LATEX):
 	$(RUN_SCRIPT) scripts.html5s_to_latex_json no_problem
 
-$(WARNING1_OPT):
-	$(RUN_SCRIPT) scripts.html5s_to_opt_json warning_1
-
-$(WARNING1_SLT):
-	$(RUN_SCRIPT) scripts.html5s_to_slt_json warning_1
-
 $(WARNING1_PREFIX):
 	$(RUN_SCRIPT) scripts.html5s_to_prefix_json warning_1
 
-$(WARNING1_INFIX):
-	$(RUN_SCRIPT) scripts.html5s_to_infix_json warning_1
-
-$(WARNING1_LATEX):
-	$(RUN_SCRIPT) scripts.html5s_to_latex_json warning_1
-
-$(WARNING2_OPT):
-	$(RUN_SCRIPT) scripts.html5s_to_opt_json warning_2
-
-$(WARNING2_SLT):
-	$(RUN_SCRIPT) scripts.html5s_to_slt_json warning_2
-
 $(WARNING2_PREFIX):
 	$(RUN_SCRIPT) scripts.html5s_to_prefix_json warning_2
-
-$(WARNING2_INFIX):
-	$(RUN_SCRIPT) scripts.html5s_to_infix_json warning_2
-
-$(WARNING2_LATEX):
-	$(RUN_SCRIPT) scripts.html5s_to_latex_json warning_2

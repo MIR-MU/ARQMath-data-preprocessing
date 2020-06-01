@@ -1,0 +1,8 @@
+outs:
+- path: arxmliv_prefix_08_2019_warning_1.json.gz
+  persist: false
+  cache: true
+  metric: false
+  md5: 884f783e729fa90ebae7451f0e1440ec
+md5: 7b3abc8d32595088fd7ce081eaf55f04
+cmd: make arxmliv_prefix_08_2019_warning_1.json.gz

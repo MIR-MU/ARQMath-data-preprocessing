@@ -1,0 +1,11 @@
+deps:
+- md5: a17a05f6eebd3f5419852a06a2992b76
+  path: ../Formulas/formula_prefix.V1.0.tsv
+outs:
+- cache: true
+  path: Posts.V1.2_prefix.json.gz
+  metric: false
+  persist: false
+  md5: f250d5702665d6e0853bec79ee7dcc7b
+md5: 97b972e2537533f1f72171f09300d9d6
+cmd: make Posts.V1.2_prefix.json.gz

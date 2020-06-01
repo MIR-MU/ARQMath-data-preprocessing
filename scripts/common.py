@@ -130,7 +130,7 @@ def ntcir_article_read_html5_worker(args):
             ]
             for paragraph in xml_document.xpath('//div[contains(@class, "ltx_para")]')
         ]
-    except etree.Error as e:
+    except (etree.Error, UnicodeDecodeError) as e:
         document = []
     return (zip_filename, filename, document)
 
