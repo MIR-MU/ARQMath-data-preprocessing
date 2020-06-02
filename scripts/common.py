@@ -88,7 +88,7 @@ def arqmath_post_read_html5_worker(args):
             replacement.text += ' ' + math_element.tail
         math_element.getparent().replace(math_element, replacement)
         if 'id' in math_element.attrib:
-            math_element_id = int(math_element.attrib['id'])
+            math_element_id = math_element.attrib['id']
         else:
             math_element_id = None
         math_element_text = re.sub(r'^(\$*)(.*)\1', r'\2', math_element.text or '')

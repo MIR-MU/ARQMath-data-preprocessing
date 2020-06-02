@@ -29,16 +29,16 @@ votes-qrels.V1.2.tsv:
 	$(RUN_SCRIPT) scripts.xml_to_qrels_tsv
 
 Posts.V1.2_latex.json.gz:
-	$(RUN_SCRIPT) scripts.xml_and_csv_to_latex_json
+	$(RUN_SCRIPT) scripts.xml_and_csv_to_latex_json collection
 
 Posts.V1.2_opt.json.gz:
-	$(RUN_SCRIPT) scripts.xml_and_csv_to_opt_json
+	$(RUN_SCRIPT) scripts.xml_and_csv_to_opt_json collection
 
 Posts.V1.2_slt.json.gz:
-	$(RUN_SCRIPT) scripts.xml_and_csv_to_slt_json
+	$(RUN_SCRIPT) scripts.xml_and_csv_to_slt_json collection
 
 Posts.V1.2_prefix.json.gz:
-	$(RUN_SCRIPT) scripts.xml_and_csv_to_prefix_json
+	$(RUN_SCRIPT) scripts.xml_and_csv_to_prefix_json collection
 
 Posts.V1.2_infix.json.gz:
-	$(RUN_SCRIPT) scripts.xml_and_csv_to_infix_json
+	$(RUN_SCRIPT) scripts.xml_and_csv_to_infix_json collection

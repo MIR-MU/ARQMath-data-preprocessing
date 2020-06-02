@@ -1,0 +1,11 @@
+deps:
+- md5: 16d6c3adf86483faa8a78e608416af9c
+  path: Formula_topics_infix_V2.0.tsv
+outs:
+- cache: true
+  path: Topics.V2.0_infix.json.gz
+  metric: false
+  persist: false
+  md5: c558f4a1cd4dc93079eae7721bad7550
+md5: 00dd609a0d092a1f66207007c8e89161
+cmd: make Topics.V2.0_infix.json.gz

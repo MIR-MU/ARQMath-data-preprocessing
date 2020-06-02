@@ -1,0 +1,8 @@
+outs:
+- cache: true
+  path: Topics.V2.0_latex.json.gz
+  metric: false
+  persist: false
+  md5: b0d3d76df80756dbd6ae2d6a3a623bbf
+md5: 38f62520367fe75ea662e14f61111709
+cmd: make Topics.V2.0_latex.json.gz

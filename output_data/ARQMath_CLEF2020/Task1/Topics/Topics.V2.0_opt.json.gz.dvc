@@ -1,0 +1,11 @@
+deps:
+- md5: c33247e216e18872c1ea0699fa7d8c7c
+  path: Formula_topics_opt_V2.0.tsv
+outs:
+- cache: true
+  path: Topics.V2.0_opt.json.gz
+  metric: false
+  persist: false
+  md5: 89c220cd98b234212a359052a6c0ec16
+md5: 17f5148f3eda2eb24555974b61525320
+cmd: make Topics.V2.0_opt.json.gz
