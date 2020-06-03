@@ -17,14 +17,14 @@ topics-formula_ids-qrels.V1.1.tsv:
 $(CMML) $(PMML):
 	$(RUN_SCRIPT) scripts.latex_tsv_to_cmml_and_pmml_tsv task2-test
 
-$(OPT): $(CMML)
+$(OPT):
 	$(RUN_SCRIPT) scripts.cmml_tsv_to_opt_tsv task2-test
 
-$(SLT): $(PMML)
+$(SLT):
 	$(RUN_SCRIPT) scripts.pmml_tsv_to_slt_tsv task2-test
 
-$(PREFIX): $(CMML)
+$(PREFIX):
 	$(RUN_SCRIPT) scripts.cmml_tsv_to_prefix_tsv task2-test
 
-$(INFIX): $(CMML)
+$(INFIX):
 	$(RUN_SCRIPT) scripts.cmml_tsv_to_infix_tsv task2-test
