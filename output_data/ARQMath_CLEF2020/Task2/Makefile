@@ -9,7 +9,10 @@ SLT=Formula_topics_slt.V2.0.tsv
 PREFIX=Formula_topics_prefix.V2.0.tsv
 INFIX=Formula_topics_infix.V2.0.tsv
 
-all: $(CMML) $(PMML) $(OPT) $(SLT) $(PREFIX) $(INFIX)
+all: $(CMML) $(PMML) $(OPT) $(SLT) $(PREFIX) $(INFIX) topics-formula_ids-qrels.V1.1.tsv
+
+topics-formula_ids-qrels.V1.1.tsv:
+	$(RUN_SCRIPT) scripts.xml_to_qrels_tsv task2-topics-formula_ids
 
 $(CMML) $(PMML):
 	$(RUN_SCRIPT) scripts.latex_tsv_to_cmml_and_pmml_tsv task2-test

@@ -1,0 +1,8 @@
+md5: 27d67421fb69265eb937af91792f3fc0
+outs:
+- md5: bd2dd27be8c9d94f64566f9ec87414d6
+  metric: false
+  persist: false
+  cache: true
+  path: topics-formula_ids-qrels.V1.1.tsv
+cmd: make topics-formula_ids-qrels.V1.1.tsv

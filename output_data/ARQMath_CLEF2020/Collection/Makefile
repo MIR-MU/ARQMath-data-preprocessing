@@ -26,7 +26,7 @@ sanity-check:
 	gzip -d < Posts.V1.2_infix.json.gz | grep -q '^"3058136":.*"text:implies", "text:that", "math:(", "math:(", "math:V!f", "math:U!times", "math:V!y", "math:)", "math:U!eq", "math:(", "math:V!f", "math:U!times", "math:V!y", "math:)", "math:)"'
 
 votes-qrels.V1.2.tsv:
-	$(RUN_SCRIPT) scripts.xml_to_qrels_tsv
+	$(RUN_SCRIPT) scripts.xml_to_qrels_tsv collection
 
 Posts.V1.2_latex.json.gz:
 	$(RUN_SCRIPT) scripts.xml_and_csv_to_latex_json collection
